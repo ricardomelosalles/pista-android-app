@@ -294,8 +294,9 @@ let profile=store.get('pista.profile',{name:''});
 let coachPrefs=store.get('pista.coachPrefs',{goal:'base',level:'beginner'});
 let coachPlan=store.get('pista.coachPlan',null);
 /* App Android (Capacitor): GPS em segundo plano e salvamento de arquivos; na web continua igual */
+const capPlugin=n=>{try{const C=window.Capacitor;if(!C)return null;return typeof C.registerPlugin==='function'?C.registerPlugin(n):((C.Plugins&&C.Plugins[n])||null)}catch(e){return null}};
 const NATIVE=!!(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform());
-const BG=NATIVE?Capacitor.registerPlugin('BackgroundGeolocation'):null;
+const BG=NATIVE?capPlugin('BackgroundGeolocation'):null;
 function gpsStart(){
  if(!BG){S.wid=navigator.geolocation.watchPosition(onPos,onErr,{enableHighAccuracy:true,maximumAge:0,timeout:20000});return}
  S.wid=BG.addWatcher({backgroundTitle:'Pista · gravando corrida',backgroundMessage:'Toque para voltar ao app.',requestPermissions:true,stale:false,distanceFilter:0},(l,e)=>{
@@ -306,8 +307,8 @@ function gpsStop(){const w=S.wid;S.wid=null;if(w==null)return;
 async function saveFile(blob,name,text){
  if(!NATIVE){const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1500);return}
  try{const b64=await new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(String(r.result).split(',')[1]);r.onerror=no;r.readAsDataURL(blob)});
-  const f=await Capacitor.registerPlugin('Filesystem').writeFile({path:name,data:b64,directory:'CACHE'});
-  await Capacitor.registerPlugin('Share').share(text?{title:name,text,files:[f.uri],dialogTitle:'Compartilhar'}:{title:name,url:f.uri,dialogTitle:'Salvar ou enviar'})
+  const f=await capPlugin('Filesystem').writeFile({path:name,data:b64,directory:'CACHE'});
+  await capPlugin('Share').share(text?{title:name,text,files:[f.uri],dialogTitle:'Compartilhar'}:{title:name,url:f.uri,dialogTitle:'Salvar ou enviar'})
  }catch(e){if(!/cancel/i.test(String((e&&e.message)||e)))alert('Não foi possível salvar o arquivo.')}}
 const esc=s=>String(s==null?'':s).replace(/[<>&"']/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c]));
 function normRun(r){const n=v=>Number.isFinite(Number(v))?Number(v):0,a=x=>Array.isArray(x)?x:[];return{...r,id:n(r.id),date:n(r.date),dist:n(r.dist),time:n(r.time),pts:a(r.pts).filter(p=>Array.isArray(p)&&p.length>=4),splits:a(r.splits).map(Number).filter(Number.isFinite),laps:a(r.laps).map(l=>({n:String(l&&l.n!=null?l.n:''),t:n(l&&l.t),d:n(l&&l.d)})),hr:r.hr&&Number(r.hr.avg)>0?{avg:Math.round(Number(r.hr.avg)),max:Number(r.hr.max)>0?Math.round(Number(r.hr.max)):undefined}:null}}
@@ -786,7 +787,7 @@ if(seen)sp.remove();else{try{sessionStorage.setItem('pista.sp','1')}catch(e){}
  v.onended=endSplash;v.onerror=()=>{clearTimeout(spT);spT=setTimeout(endSplash,1200)};
  v.src='intro.mp4';sp.appendChild(v);try{const pr=v.play();if(pr&&pr.catch)pr.catch(()=>{v.muted=true;v.play().catch(()=>{})})}catch(e){}}
 try{if(navigator.storage&&navigator.storage.persist){const pp=navigator.storage.persist();if(pp&&pp.catch)pp.catch(()=>{})}}catch(e){}
-if(NATIVE)try{Capacitor.registerPlugin('LocalNotifications').requestPermissions().catch(()=>{})}catch(e){}
+if(NATIVE)try{capPlugin('LocalNotifications').requestPermissions().catch(()=>{})}catch(e){}
 navAvatar();restoreActiveSession();
 ui();
 </script>

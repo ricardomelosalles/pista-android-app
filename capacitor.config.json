@@ -1,0 +1,11 @@
+{
+  "appId": "com.pista.corrida",
+  "appName": "Pista",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "useLegacyBridge": true
+  }
+}

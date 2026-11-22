@@ -13,7 +13,8 @@
 <link rel="icon" href="icon-192.png">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap"></noscript>
 <style>
 :root{--bg:#F3F6FA;--card:#fff;--ink:#10222E;--mut:#5C6F7C;--line:#D6DEE6;--acc:#1747E0;--onacc:#fff;--bad:#C62F3B;color-scheme:light}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -189,6 +190,10 @@ nav a.on .navav{outline:2px solid var(--acc);outline-offset:1px}
 </style>
 </head>
 <body>
+<script>
+(function(){var rm=function(){var s=document.getElementById('splash');if(s){s.classList.add('off');setTimeout(function(){s.remove()},500)}};setTimeout(rm,8000);
+window.addEventListener('error',function(e){rm();var d=document.createElement('div');d.style.cssText='position:fixed;left:8px;right:8px;top:8px;z-index:99999;background:#7A1F18;color:#fff;font:13px/1.35 system-ui,sans-serif;padding:10px 12px;border-radius:10px';d.textContent='Erro: '+(e.message||'desconhecido')+' (linha '+(e.lineno||'?')+'). Toque para fechar.';d.onclick=function(){d.remove()};document.body.appendChild(d)})})();
+</script>
 <div id="splash"><img src="splash.jpg" alt="Pista"></div>
 <main>
  <header class="brand"><img src="logo.png" alt="Pista"></header>
@@ -780,7 +785,7 @@ if(seen)sp.remove();else{try{sessionStorage.setItem('pista.sp','1')}catch(e){}
  v.onplaying=()=>{clearTimeout(spT);v.style.opacity=1;spT=setTimeout(endSplash,9000)};
  v.onended=endSplash;v.onerror=()=>{clearTimeout(spT);spT=setTimeout(endSplash,1200)};
  v.src='intro.mp4';sp.appendChild(v);try{const pr=v.play();if(pr&&pr.catch)pr.catch(()=>{v.muted=true;v.play().catch(()=>{})})}catch(e){}}
-if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});
+try{if(navigator.storage&&navigator.storage.persist){const pp=navigator.storage.persist();if(pp&&pp.catch)pp.catch(()=>{})}}catch(e){}
 if(NATIVE)try{Capacitor.registerPlugin('LocalNotifications').requestPermissions().catch(()=>{})}catch(e){}
 navAvatar();restoreActiveSession();
 ui();

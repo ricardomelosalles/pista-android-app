@@ -187,6 +187,29 @@ nav a.on .navav{outline:2px solid var(--acc);outline-offset:1px}
 #s5 .co-ins .ic{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--k);color:#fff;margin-bottom:8px}
 #s5 .co-ins b{display:block;font-size:17px}#s5 .co-ins p{margin:4px 0 0;color:var(--mut);font-size:14.5px}
 #s5 .co-swipe{text-align:right;color:var(--mut);font-size:13px;margin:0 2px 4px}
+#s5 .co-seg{display:flex;background:#EEF3F8;border-radius:12px;padding:4px;gap:4px}
+#s5 .co-seg button{flex:1;padding:10px 2px;border-radius:9px;font-size:15px;color:#35506B;background:none}
+#s5 .co-seg button.on{background:#fff;color:#06182E;font-weight:700;box-shadow:0 1px 4px rgba(6,24,46,.2)}
+#s5 .co-hint{margin-top:10px;font-size:14px;color:var(--mut)}#s5 .co-hint button{padding:0 2px;font-size:14px}
+/* Questionário inicial */
+#ob{position:fixed;inset:0;z-index:9000;background:linear-gradient(180deg,#F3F6FA,#E4ECF7);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px)}
+#ob[hidden]{display:none}
+.ob-top,.ob-main,.ob-foot{max-width:560px;width:100%;margin:0 auto}
+.ob-top{display:flex;align-items:center;gap:12px;padding:14px 18px 6px}
+.ob-top button{font-size:34px;line-height:1;padding:0 8px;color:var(--acc)}
+.ob-prog{flex:1;height:8px;border-radius:4px;background:#D6DEE6;overflow:hidden}.ob-prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,#1747E0,#19D3C5);transition:width .3s}
+#obCount{font-size:13px;color:var(--mut)}
+.ob-main{flex:1;overflow-y:auto;padding:10px 18px}
+.ob-main h1{font-size:30px;line-height:1.05;margin:14px 0 14px}.ob-s{color:var(--mut);margin:-6px 0 14px}
+.ob-opt{display:block;width:100%;text-align:left;background:#fff;border:2px solid var(--line);border-radius:16px;padding:14px;margin-bottom:10px}
+.ob-opt b{display:block;font-size:17px;font-weight:600}.ob-opt small{display:block;color:var(--mut);margin-top:3px;font-size:14px}
+.ob-opt.on{border-color:var(--acc);background:#EEF3FF}
+.ob-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}.ob-chip{border:2px solid var(--line);background:#fff;border-radius:99px;padding:10px 16px}
+.ob-chip.on{border-color:var(--acc);background:#EEF3FF;color:var(--acc);font-weight:700}
+.ob-warn{background:#FFF8E8;border:1px solid #F3D9A0;color:#6B4A07;border-radius:12px;padding:10px 12px;margin-top:10px;font-size:15px}
+.ob-sum{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px}.ob-sum div{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px}
+.ob-sum small{display:block;color:var(--mut)}.ob-sum b{font-size:18px}
+.ob-foot{padding:10px 18px calc(14px + env(safe-area-inset-bottom,0px))}#obNext[disabled]{opacity:.45}
 </style>
 </head>
 <body>
@@ -242,6 +265,7 @@ window.addEventListener('error',function(e){rm();var d=document.createElement('d
   <div class="pf-pane" id="pp1"><div id="pfList"></div></div>
   <div class="pf-pane" id="pp2"><div class="pr" id="pr"></div></div>
   <div class="pf-pane" id="pp3">
+   <button class="profile-action" id="obRedo">Refazer questionário inicial</button>
    <button class="profile-action" id="exportBackup">⬇ Exportar backup completo (JSON)</button>
    <label class="profile-action" style="display:block;cursor:pointer">⬆ Restaurar backup JSON <input type="file" id="importBackup" accept="application/json,.json" hidden></label>
    <button class="profile-action" id="exportAllGpx">⇧ Exportar trajetos GPX</button>
@@ -253,6 +277,9 @@ window.addEventListener('error',function(e){rm();var d=document.createElement('d
    <div class="co-top"><div><div class="co-kicker">Treinador inteligente</div><div class="co-title" id="coGoal">Plano</div><div class="co-phase" id="coPhase"></div></div><div id="coRing"></div></div>
    <div class="co-dots" id="coDots"></div>
   </div>
+  <div class="co-card"><div class="co-h2">Seu nível</div>
+   <div class="co-seg" id="coLevel"><button data-v="beginner">Iniciante</button><button data-v="intermediate">Intermediário</button><button data-v="advanced">Avançado</button></div>
+   <div class="co-hint" id="coLevelHint"></div></div>
   <div class="co-card"><div class="co-h2">Como você está hoje?</div><div class="co-chips" id="coCheck"></div><div id="coCheckMsg"></div></div>
   <div class="co-kpis" id="coKpis"></div>
   <div class="co-h2">Plano da semana</div>
@@ -264,8 +291,7 @@ window.addEventListener('error',function(e){rm();var d=document.createElement('d
   <details class="co-card"><summary>Ajustar meu perfil de corrida</summary>
    <label for="coachGoal">Objetivo principal</label>
    <select id="coachGoal"><option value="base">Construir resistência</option><option value="5k">Melhorar nos 5 km</option><option value="10k">Preparar para 10 km</option><option value="half">Preparar para meia maratona (21,1 km)</option><option value="marathon">Preparar para maratona (42,2 km)</option><option value="speed">Melhorar velocidade</option><option value="return">Voltar a correr com segurança</option><option value="weight">Condicionamento físico</option></select>
-   <label for="coachLevel">Nível atual</label>
-   <select id="coachLevel"><option value="beginner">Iniciante / retomando</option><option value="intermediate">Intermediário</option><option value="advanced">Avançado</option></select>
+   <input type="hidden" id="coachLevel">
    <label for="coachDays">Quantos dias por semana você pode correr?</label>
    <select id="coachDays"><option value="3">3 dias</option><option value="4">4 dias</option><option value="5">5 dias</option></select>
    <label for="coachRace">Data da prova (opcional, para 5 km, 10 km, meia e maratona)</label>
@@ -283,6 +309,7 @@ window.addEventListener('error',function(e){rm();var d=document.createElement('d
  <a href="#" data-t="5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9zM8.5 13l2 2 4-4.5"/></svg><span>Treinador</span></a>
  <a href="#" data-t="4"><span id="navMe"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8.5" r="3.7"/><path d="M4.5 20c.8-4 3.8-6 7.5-6s6.7 2 7.5 6"/></svg></span><span>Você</span></a>
 </nav>
+<div id="ob" hidden><div class="ob-top"><button id="obBack" aria-label="Voltar">‹</button><div class="ob-prog"><i id="obBar"></i></div><span id="obCount"></span></div><div class="ob-main" id="obBody"></div><div class="ob-foot"><button class="main" id="obNext" style="width:100%">Continuar</button><button class="link" id="obSkip" style="width:100%;text-align:center">Pular por agora</button></div></div>
 <div id="sheet" hidden><div id="sin"></div></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -586,6 +613,7 @@ function renderPerformance(){
 
 /* Treinador inteligente local: regras transparentes, sem enviar dados para a internet */
 /* Treinador inteligente v2: carga, ritmos de referência, fase da prova, check-in e acompanhamento semanal */
+const LV={beginner:'Iniciante',intermediate:'Intermediário',advanced:'Avançado'};
 const CO_KIND={easy:{n:'Leve',c:'#14B8A6'},long:{n:'Longão',c:'#3B82F6'},interval:{n:'Qualidade',c:'#F97316'},walk:{n:'Caminhada',c:'#94A3B8'},run:{n:'Trote',c:'#14B8A6'}};
 const CO_MINW={'5k':6,'10k':8,half:12,marathon:16},CO_DAY=86400000;
 const fK1=v=>Number(v).toFixed(1).replace('.',','),fRange=a=>a?`${fP(a[0])}–${fP(a[1])} /km`:null;
@@ -615,8 +643,11 @@ function coInterval(goal,level){
  return{name:'Estímulos de velocidade',detail:'Aquecimento 10 min; 8 × 1 min rápidos (sem sprint) com 2 min leves; desaquecimento 5 min.',plan:{nome:'8 × 1 min',aq:'10min',rep:8,tiro:'1min',desc:'2min',des:'5min'}}}
 function coachBuildPlan(m){
  const P=coachPrefs,goal=P.goal||'base',level=P.level||'beginner',days=Number(P.days||3),reasons=[],hist=m.avg4>0;
- let target=hist?m.avg4*1.08:(level==='beginner'?6:level==='intermediate'?12:18);
- reasons.push(hist?`Média das últimas 4 semanas completas: ${fK1(m.avg4)} km; a meta sobe no máximo cerca de 8%.`:'Sem corridas nas últimas 4 semanas: recomeço gradual pelo nível informado.');
+ const cons=Number(profile.age)>=50||(profile.health&&profile.health!=='ok'),grow=cons?1.05:(level==='beginner'?1.05:level==='advanced'?1.10:1.08);
+ let target=hist?m.avg4*grow:(level==='beginner'?6:level==='intermediate'?12:18);
+ reasons.push('Nível informado: '+LV[level]+(level==='beginner'?'. Sessões leves, sem treinos de qualidade.':level==='intermediate'?'. Sessões leves e um treino de qualidade quando há regularidade.':'. Mais margem de progressão e treinos de qualidade quando há regularidade.'));
+ if(cons)reasons.push('Progressão mais conservadora (idade ou condição de saúde informada no questionário).');
+ reasons.push(hist?`Média das últimas 4 semanas completas: ${fK1(m.avg4)} km; a meta sobe no máximo cerca de ${Math.round((grow-1)*100)}%.`:'Sem corridas nas últimas 4 semanas: recomeço gradual pelo nível informado.');
  if(m.recoveryDue){target=m.avg4*.8;reasons.push('Três semanas seguidas de aumento: esta é uma semana de recuperação, com cerca de 20% menos volume.')}
  else if(m.acwr!==null&&m.acwr>1.3){target=Math.min(target,m.avg4);reasons.push('A carga dos últimos 7 dias está acima da sua média: o volume foi mantido, sem aumento.')}
  if(hist&&m.daysSince!==null&&m.daysSince>=10){target*=.75;reasons.push(`Última corrida há ${m.daysSince} dias: retomada com 25% menos volume.`)}
@@ -652,9 +683,14 @@ function renderCoach(){
  if(!coachPlan||coachPlan.week!==weekStart(Date.now())||!Array.isArray(coachPlan.sessions)||coachPlan.goal!==(P.goal||'base')||coachPlan.level!==(P.level||'beginner')||coachPlan.days!==Number(P.days||3)||(coachPlan.race||'')!==(P.race||''))coachBuildPlan(m);
  const p=coachPlan,chk=coachCheckGet(),doneN=Math.min(p.sessions.length,m.cur.filter(r=>r.dist>=1000).length);
  $('#coGoal').textContent=coachGoalName(p.goal);
- $('#coPhase').textContent=(p.phase||'Plano semanal')+(p.wr!==null?` · ${p.wr} sem. para a prova`:'');
+ $('#coPhase').textContent=(p.phase||'Plano semanal')+' · '+(LV[p.level]||'')+(p.wr!==null?` · ${p.wr} sem. para a prova`:'');
  $('#coRing').innerHTML=coRing(p.target?m.curKm/p.target*100:0,fK1(m.curKm),'de '+fK1(p.target)+' km');
  $('#coDots').innerHTML=p.sessions.map((_,i)=>`<i class="${i<doneN?'on':''}"></i>`).join('')+`<span>${doneN} de ${p.sessions.length} sessões</span>`;
+ const lvl=P.level||'beginner';
+ document.querySelectorAll('#coLevel button').forEach(b=>{b.classList.toggle('on',b.dataset.v===lvl);b.onclick=()=>{$('#coachLevel').value=b.dataset.v;saveCoachPrefs()}});
+ const sug=m.avg4>0?(m.avg4>=35&&m.perWeek>=4?'advanced':m.avg4>=12&&m.perWeek>=2.5?'intermediate':'beginner'):null,bs=`${fK1(m.avg4)} km/semana e ${fK1(m.perWeek)} corrida(s)/semana nas últimas 4 semanas`;
+ $('#coLevelHint').innerHTML=sug===null?'Sem histórico recente: escolha o nível que melhor descreve você.':sug===lvl?`Combina com seu histórico recente (${bs}).`:`Pelo seu histórico (${bs}), o nível sugerido é <b>${LV[sug]}</b>. <button class="link" data-s="${sug}">Usar</button>`;
+ const sb=$('#coLevelHint').querySelector('button');if(sb)sb.onclick=()=>{$('#coachLevel').value=sb.dataset.s;saveCoachPrefs()};
  $('#coCheck').innerHTML=[['ok','Descansado'],['tired','Cansado'],['pain','Dor ou incômodo']].map(([k,t])=>`<button class="co-chip${chk===k?' on '+k:''}" data-k="${k}">${t}</button>`).join('');
  $('#coCheck').querySelectorAll('button').forEach(b=>b.onclick=()=>{store.set('pista.coachCheck',{d:coTodayKey(),s:b.dataset.k});renderCoach()});
  $('#coCheckMsg').innerHTML=chk==='pain'?'<div class="co-alert">Priorize descanso hoje. Se a dor persistir ou piorar, procure um profissional de saúde antes de voltar a treinar.</div>':chk==='tired'?'<div class="co-alert warn">Cansaço registrado: os treinos de qualidade viram corrida leve.</div>':'';
@@ -790,6 +826,52 @@ try{if(navigator.storage&&navigator.storage.persist){const pp=navigator.storage.
 if(NATIVE)try{capPlugin('LocalNotifications').requestPermissions().catch(()=>{})}catch(e){}
 navAvatar();restoreActiveSession();
 ui();
+/* Questionário inicial: define nível, objetivo, dias, meta semanal e cuidados de saúde */
+const OB_RACE=new Set(['5k','10k','half','marathon']);let OB={i:0,a:{}};
+const OB_Q={
+ name:{t:'Como podemos te chamar?',s:'Usamos seu nome no perfil e nos cartões de compartilhar. Pode deixar em branco.',type:'text',key:'name',ph:'Seu nome'},
+ level:{t:'Qual é a sua experiência com corrida?',type:'opt',key:'level',req:1,opts:[['beginner','Estou começando ou voltando depois de uma pausa longa','Treinos leves, com caminhada se precisar'],['intermediate','Corro de vez em quando e consigo correr cerca de 5 km','Mais regularidade e algum treino de qualidade'],['advanced','Corro com regularidade e já treino para provas','Mais volume e treinos específicos']]},
+ goal:{t:'Qual é o seu objetivo principal?',type:'opt',key:'goal',req:1,opts:[['base','Criar o hábito e ganhar resistência'],['return','Voltar a correr com segurança'],['weight','Condicionamento e controle de peso'],['5k','Melhorar nos 5 km'],['10k','Preparar para 10 km'],['half','Meia maratona (21,1 km)'],['marathon','Maratona (42,2 km)'],['speed','Ficar mais rápido']]},
+ race:{t:'Você já tem uma prova marcada?',s:'Opcional. Com a data, o plano passa pelas fases de preparação e redução de volume.',type:'date',key:'race'},
+ days:{t:'Quantos dias por semana você pode correr?',type:'opt',key:'days',req:1,opts:[['3','3 dias','Bom para começar'],['4','4 dias'],['5','5 dias','Exige boa recuperação']]},
+ health:{t:'Como está sua saúde para correr?',s:'Esta resposta fica só no seu aparelho e serve para deixar o plano mais cuidadoso.',type:'opt',key:'health',req:1,opts:[['ok','Estou bem, sem dor ou restrição'],['injury','Tenho dor ou lesão recente'],['cond','Tenho condição de saúde que exige acompanhamento']]},
+ age:{t:'Qual é a sua idade?',s:'Opcional. Usamos para ajustar a progressão com mais cuidado.',type:'num',key:'age',ph:'Ex.: 35'},
+ weekly:{t:'Qual meta semanal de distância?',s:'Sugerimos um valor pelo seu nível. Você pode mudar depois.',type:'weekly',key:'weekly'}};
+const obSteps=()=>['name','level','goal',...(OB_RACE.has(OB.a.goal)?['race']:[]),'days','health','age','weekly','summary'];
+const obSick=()=>!!(OB.a.health&&OB.a.health!=='ok');
+const obSug=()=>{const a=OB.a,l=obSick()?'beginner':a.level||'beginner';return(l==='beginner'?8:l==='intermediate'?15:25)+(a.goal==='marathon'?10:a.goal==='half'?5:0)};
+function obEff(){const a=OB.a,sick=obSick();return{level:sick?'beginner':(a.level||'beginner'),goal:sick?'return':(a.goal||'base'),days:Number(a.days||3),race:sick||!OB_RACE.has(a.goal)?'':(a.race||''),weekly:Math.max(1,parseFloat(String(a.weekly||obSug()).replace(',','.'))||obSug())}}
+function obStart(redo){
+ OB={i:0,a:redo?{name:profile.name||'',level:coachPrefs.level,goal:coachPrefs.goal,days:String(coachPrefs.days||3),race:coachPrefs.race||'',health:profile.health||'',age:profile.age||'',weekly:goal}:{}};
+ $('#ob').hidden=false;obRender()}
+function obSummary(){const e=obEff(),a=OB.a;
+ return `<h1>Tudo pronto${a.name?', '+esc(a.name.trim().split(' ')[0]):''}!</h1><p class="ob-s">Este é o seu ponto de partida. Você pode ajustar tudo depois no Treinador e no Perfil.</p><div class="ob-sum"><div><small>Nível</small><b>${LV[e.level]}</b></div><div><small>Objetivo</small><b>${coachGoalName(e.goal)}</b></div><div><small>Dias por semana</small><b>${e.days}</b></div><div><small>Meta semanal</small><b>${fK1(e.weekly)} km</b></div>${e.race?`<div><small>Prova</small><b>${new Date(e.race+'T12:00:00').toLocaleDateString('pt-BR')}</b></div>`:''}</div>`+(obSick()?'<div class="ob-warn">Por sua resposta sobre saúde, o plano começa conservador (nível Iniciante, objetivo Voltar a correr). Procure orientação profissional antes de treinar.</div>':'')}
+function obRender(){
+ const st=obSteps(),k=st[OB.i],last=OB.i===st.length-1,a=OB.a,q=OB_Q[k];let h='';
+ $('#obBar').style.width=((OB.i+1)/st.length*100)+'%';$('#obCount').textContent=(OB.i+1)+' de '+st.length;$('#obBack').style.visibility=OB.i?'visible':'hidden';
+ if(k==='summary')h=obSummary();
+ else{h=`<h1>${q.t}</h1>`+(q.s?`<p class="ob-s">${q.s}</p>`:'');
+  if(q.type==='opt')h+=q.opts.map(o=>`<button class="ob-opt${String(a[q.key])===o[0]?' on':''}" data-v="${o[0]}"><b>${o[1]}</b>${o[2]?`<small>${o[2]}</small>`:''}</button>`).join('');
+  else if(q.type==='text')h+=`<input type="text" id="obIn" maxlength="40" placeholder="${q.ph}" value="${esc(a.name||'')}">`;
+  else if(q.type==='num')h+=`<input type="text" id="obIn" inputmode="numeric" maxlength="2" placeholder="${q.ph}" value="${esc(a.age||'')}">`;
+  else if(q.type==='date')h+=`<input type="date" id="obIn" value="${esc(a.race||'')}"><button class="link" id="obNoDate">Ainda não tenho data</button>`;
+  else{if(!a.weekly)a.weekly=obSug();h+=`<div class="ob-chips">${[5,8,10,15,20,25,30,40].map(v=>`<button class="ob-chip${+a.weekly===v?' on':''}" data-w="${v}">${v} km</button>`).join('')}</div><label for="obIn">Ou digite outro valor (km)</label><input type="text" id="obIn" inputmode="decimal" value="${esc(a.weekly)}">`}
+  if(k==='health'&&obSick())h+='<div class="ob-warn">Antes de treinar, converse com um médico ou profissional de saúde. Vamos começar com um plano bem conservador.</div>'}
+ $('#obBody').innerHTML=h;$('#obBody').scrollTop=0;$('#obNext').textContent=last?'Começar':'Continuar';$('#obNext').disabled=!!(q&&q.req&&!a[q.key]);
+ $('#obBody').querySelectorAll('.ob-opt').forEach(b=>b.onclick=()=>{a[q.key]=b.dataset.v;obRender()});
+ $('#obBody').querySelectorAll('.ob-chip').forEach(b=>b.onclick=()=>{a.weekly=b.dataset.w;obRender()});
+ const inp=$('#obIn');if(inp){inp.oninput=()=>{a[q.key]=inp.value;if(k==='weekly')document.querySelectorAll('.ob-chip').forEach(c=>c.classList.toggle('on',parseFloat(String(inp.value).replace(',','.'))===+c.dataset.w))};inp.onkeydown=e=>{if(e.key==='Enter')$('#obNext').click()}}
+ const nd=$('#obNoDate');if(nd)nd.onclick=()=>{a.race='';$('#obNext').click()}}
+function obFinish(){const e=obEff(),a=OB.a,age=parseInt(a.age);
+ profile={...profile,name:(a.name||'').trim()||profile.name||'',age:age>0&&age<110?age:null,health:a.health||'ok'};store.set('pista.profile',profile);
+ coachPrefs={goal:e.goal,level:e.level,days:e.days,race:e.race};store.set('pista.coachPrefs',coachPrefs);coachPlan=null;store.set('pista.coachPlan',null);
+ goal=e.weekly;store.set('pista.goal',goal);store.set('pista.onboarded',{v:1,at:Date.now()});
+ $('#ob').hidden=true;navAvatar();tab(5)}
+$('#obNext').onclick=()=>{if(OB.i===obSteps().length-1)obFinish();else{OB.i++;obRender()}};
+$('#obBack').onclick=()=>{if(OB.i>0){OB.i--;obRender()}};
+$('#obSkip').onclick=()=>{store.set('pista.onboarded',{v:1,at:Date.now(),skipped:true});$('#ob').hidden=true};
+$('#obRedo').onclick=()=>obStart(true);
+if(!store.get('pista.onboarded',null)){if(runs.length)store.set('pista.onboarded',{v:1,at:Date.now(),auto:true});else obStart(false)}
 </script>
 </body>
 </html>

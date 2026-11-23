@@ -617,7 +617,37 @@ window.addEventListener('beforeunload',e=>{if(S.st!=='idle'){e.preventDefault();
 function curPace(){const P=S.pts,n=P.length;if(n<2)return NaN;const b=P[n-1];if(el()-b[3]>20)return NaN;
  for(let i=n-2;i>=0;i--){const dd=b[2]-P[i][2],de=b[3]-P[i][3];if((de>=20&&dd>=30)||i===0)return dd>5?de/(dd/1000):NaN}return NaN}
 let lastSessionSave=0;
-function live(){segTick();if($('#s0').classList.contains('on'))liveUI();if(S.st!=='idle'&&Date.now()-lastSessionSave>15000){saveActiveSession();lastSessionSave=Date.now()}}
+function live(){segTick();if($('#s0').classList.contains('on'))liveUI();if(S.st!=='idle'&&Date.now()-lastSessionSave>15000){saveActiveSession();lastSessionSave=Date.now()}notifSync()}
+/* ===== Notificação ao vivo (km · tempo · ritmo) =====
+   Usa o MESMO id da notificação do serviço de GPS em segundo plano (28351), então ela é atualizada no lugar,
+   sem duplicar. Ao tocar, o Android abre o app. É removida quando a corrida termina ou é descartada. */
+const NOTIF_ID=28351,NOTIF_CH='pista_corrida';
+let nSt={ch:false,last:'',t:0,on:false,init:false},nQ=Promise.resolve();
+const nRun=f=>{nQ=nQ.then(f).catch(()=>{});return nQ};
+function notifClear(){
+ if(!NATIVE)return;const LN=capPlugin('LocalNotifications');if(!LN||!LN.cancel)return;
+ nSt.last='';nSt.on=false;
+ const c=()=>nRun(()=>LN.cancel({notifications:[{id:NOTIF_ID}]}));
+ c();setTimeout(c,1200);setTimeout(c,3500)}
+function notifSync(force){
+ if(!NATIVE)return;
+ const LN=capPlugin('LocalNotifications');if(!LN||!LN.schedule)return;
+ if(S.st==='idle'){if(nSt.on||!nSt.init){nSt.init=true;notifClear()}return}
+ nSt.init=true;
+ const now=Date.now(),paused=S.st==='paused',t=fT(el());
+ const avg=S.dist>=50?fP(el()/(S.dist/1000)):'–:––';
+ const title=(paused?'Pausada · ':'')+fK(S.dist)+' km · '+t;
+ const body=paused?'Toque para voltar à corrida':'Ritmo '+fP(curPace())+' /km · Médio '+avg+' /km';
+ const key=title+'|'+body;
+ /* só reenvia se mudou; reenvia a cada 8 s mesmo sem mudança (se o serviço de GPS trocar a notificação) */
+ if(!force&&key===nSt.last&&now-nSt.t<8000)return;
+ nSt.last=key;nSt.t=now;nSt.on=true;
+ nRun(async()=>{
+  if(!nSt.ch){try{await LN.createChannel({id:NOTIF_CH,name:'Corrida em andamento',description:'Distância, tempo e ritmo durante a corrida',importance:2,visibility:1,vibration:false,lights:false})}catch(e){}nSt.ch=true}
+  await LN.schedule({notifications:[{id:NOTIF_ID,title,body,channelId:NOTIF_CH,ongoing:true,autoCancel:false,smallIcon:'ic_tracking',iconColor:'#2D7BFF'}]})})}
+{const _onPos=onPos;onPos=function(p){_onPos(p);notifSync()}}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')notifSync(true)});
+
 function liveUI(){segUI();if(S.st!=='idle'){recUI();return}$('#dist').textContent=fK(S.dist);$('#tm').textContent=fT(el());$('#cp').textContent=fP(curPace());$('#ap').textContent=fP(S.dist>=50?el()/(S.dist/1000):NaN);showRoute($('#map'),S.pts,S.st==='running')}
 function ui(){const m=$('#bmain'),e=$('#bend');
  if(S.st==='idle'){m.textContent='Iniciar corrida';m.className='main';e.disabled=true}

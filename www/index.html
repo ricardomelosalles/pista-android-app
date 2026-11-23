@@ -210,6 +210,29 @@ nav a.on .navav{outline:2px solid var(--acc);outline-offset:1px}
 .ob-sum{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px}.ob-sum div{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px}
 .ob-sum small{display:block;color:var(--mut)}.ob-sum b{font-size:18px}
 .ob-foot{padding:10px 18px calc(14px + env(safe-area-inset-bottom,0px))}#obNext[disabled]{opacity:.45}
+/* Tela de gravação em tela cheia */
+body.rec nav{display:none}
+#rec{position:fixed;inset:0;z-index:4000;background:#E8ECEF}#rec[hidden]{display:none}
+#recMap{position:absolute;inset:0}#recMap .leaflet-tile-pane{filter:grayscale(.5) brightness(1.04)}
+.rec-fab{position:absolute;z-index:1000;width:52px;height:52px;border-radius:50%;background:#fff;color:#10222E;box-shadow:0 2px 10px rgba(0,0,0,.28);display:flex;align-items:center;justify-content:center;padding:0}
+#recBack{left:14px;top:calc(env(safe-area-inset-top,0px) + 14px)}
+#recCenter{right:14px;top:42%}#recCenter.off{color:#1E66F5}
+.rec-gps{position:absolute;z-index:1000;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 22px);background:#fff;border-radius:99px;padding:4px 12px;font-size:13px;font-weight:600;color:var(--mut);box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.rec-gps.ok{color:#0C8A4B}.rec-gps.fraco{color:#B7791F}
+.rec-warn{position:absolute;z-index:1000;left:14px;right:14px;top:calc(env(safe-area-inset-top,0px) + 78px);background:#FFF8E8;border:1px solid #F3D9A0;color:#6B4A07;border-radius:12px;padding:8px 12px;font-size:13px}
+.rec-card{position:absolute;z-index:1000;left:14px;right:14px;bottom:calc(env(safe-area-inset-bottom,0px) + 128px);background:#fff;border-radius:18px;box-shadow:0 4px 18px rgba(0,0,0,.2);padding:10px 14px 12px}
+.rec-hd{display:flex;align-items:center;justify-content:center;position:relative;min-height:34px}
+.rec-hd b{font-size:20px;color:var(--mut)}.rec-hd button{position:absolute;right:-4px;top:0;padding:6px;color:#10222E}
+.rec-grid{display:grid;grid-template-columns:repeat(3,1fr);text-align:center;margin-top:6px}
+.rec-grid b{display:block;font-size:34px;line-height:1.1}.rec-grid span{font-size:14px;color:var(--mut)}
+.rec-more{display:none;margin-top:10px;border-top:1px solid var(--line);padding-top:10px}.rec-card.open .rec-more{display:block}
+#rSeg{margin-top:8px}#rSeg b{font-size:20px}
+.rec-sheet{position:absolute;z-index:1000;left:0;right:0;bottom:0;background:#fff;border-radius:22px 22px 0 0;padding:22px 16px calc(14px + env(safe-area-inset-bottom,0px));box-shadow:0 -6px 24px rgba(0,0,0,.18)}
+.rec-sheet:before{content:"";position:absolute;left:50%;top:8px;width:44px;height:5px;margin-left:-22px;border-radius:3px;background:#C9D2DA}
+.rec-btns{display:flex;gap:12px}.rec-btns button{flex:1;height:64px;border-radius:99px;font-size:22px;font-weight:700;display:flex;gap:10px;align-items:center;justify-content:center}
+#rMain{background:linear-gradient(135deg,#1747E0,#2D7BFF);color:#fff;box-shadow:0 4px 16px rgba(45,123,255,.4)}
+#rSec{background:#EEF1F4;color:#10222E}#rSec.fin{color:#C62F3B}
+#toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 80px);transform:translateX(-50%);background:rgba(16,34,46,.94);color:#fff;padding:10px 16px;border-radius:99px;z-index:9500;font-weight:600;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap}#toast.on{opacity:1}
 </style>
 </head>
 <body>
@@ -265,6 +288,7 @@ window.addEventListener('error',function(e){rm();var d=document.createElement('d
   <div class="pf-pane" id="pp1"><div id="pfList"></div></div>
   <div class="pf-pane" id="pp2"><div class="pr" id="pr"></div></div>
   <div class="pf-pane" id="pp3">
+   <button class="profile-action" id="bgHelp">Ajuda: gravar com a tela bloqueada</button>
    <button class="profile-action" id="obRedo">Refazer questionário inicial</button>
    <button class="profile-action" id="exportBackup">⬇ Exportar backup completo (JSON)</button>
    <label class="profile-action" style="display:block;cursor:pointer">⬆ Restaurar backup JSON <input type="file" id="importBackup" accept="application/json,.json" hidden></label>
@@ -309,6 +333,20 @@ window.addEventListener('error',function(e){rm();var d=document.createElement('d
  <a href="#" data-t="5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9zM8.5 13l2 2 4-4.5"/></svg><span>Treinador</span></a>
  <a href="#" data-t="4"><span id="navMe"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8.5" r="3.7"/><path d="M4.5 20c.8-4 3.8-6 7.5-6s6.7 2 7.5 6"/></svg></span><span>Você</span></a>
 </nav>
+<div id="rec" hidden>
+ <div id="recMap"></div>
+ <button class="rec-fab" id="recBack" aria-label="Voltar"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+ <span class="rec-gps" id="rGps">GPS</span>
+ <div class="rec-warn" id="rWarn" hidden>Notificações desativadas: a gravação pode parar com a tela bloqueada.</div>
+ <button class="rec-fab" id="recCenter" aria-label="Centralizar no mapa"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg></button>
+ <div class="rec-card" id="recCard">
+  <div class="rec-hd"><b id="rTitle">Corrida</b><button id="rExp" aria-label="Mostrar mais dados"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg></button></div>
+  <div class="rec-grid"><div><b class="num" id="rTm">0:00</b><span>Tempo</span></div><div><b class="num" id="rAp">-:--</b><span>Média (/km)</span></div><div><b class="num" id="rDist">0,00</b><span>Distância (km)</span></div></div>
+  <div class="rec-more"><div class="rec-grid"><div><b class="num" id="rCp">-:--</b><span>Ritmo atual</span></div><div><b class="num" id="rHr">—</b><span>Batimentos</span></div><div><b class="num" id="rLaps">0</b><span>Voltas</span></div></div><div id="rSeg" hidden></div></div>
+ </div>
+ <div class="rec-sheet"><div class="rec-btns"><button id="rMain"></button><button id="rSec"></button></div></div>
+</div>
+<div id="toast"></div>
 <div id="ob" hidden><div class="ob-top"><button id="obBack" aria-label="Voltar">‹</button><div class="ob-prog"><i id="obBar"></i></div><span id="obCount"></span></div><div class="ob-main" id="obBody"></div><div class="ob-foot"><button class="main" id="obNext" style="width:100%">Continuar</button><button class="link" id="obSkip" style="width:100%;text-align:center">Pular por agora</button></div></div>
 <div id="sheet" hidden><div id="sin"></div></div>
 
@@ -338,9 +376,9 @@ async function saveFile(blob,name,text){
   await capPlugin('Share').share(text?{title:name,text,files:[f.uri],dialogTitle:'Compartilhar'}:{title:name,url:f.uri,dialogTitle:'Salvar ou enviar'})
  }catch(e){if(!/cancel/i.test(String((e&&e.message)||e)))alert('Não foi possível salvar o arquivo.')}}
 const esc=s=>String(s==null?'':s).replace(/[<>&"']/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c]));
-function normRun(r){const n=v=>Number.isFinite(Number(v))?Number(v):0,a=x=>Array.isArray(x)?x:[];return{...r,id:n(r.id),date:n(r.date),dist:n(r.dist),time:n(r.time),pts:a(r.pts).filter(p=>Array.isArray(p)&&p.length>=4),splits:a(r.splits).map(Number).filter(Number.isFinite),laps:a(r.laps).map(l=>({n:String(l&&l.n!=null?l.n:''),t:n(l&&l.t),d:n(l&&l.d)})),hr:r.hr&&Number(r.hr.avg)>0?{avg:Math.round(Number(r.hr.avg)),max:Number(r.hr.max)>0?Math.round(Number(r.hr.max)):undefined}:null}}
+function normRun(r){const n=v=>Number.isFinite(Number(v))?Number(v):0,a=x=>Array.isArray(x)?x:[];return{...r,id:n(r.id),date:n(r.date),dist:n(r.dist),time:n(r.time),pts:a(r.pts).filter(p=>Array.isArray(p)&&p.length>=4),splits:a(r.splits).map(Number).filter(Number.isFinite),mlaps:a(r.mlaps).filter(x=>Array.isArray(x)&&x.length>=2),laps:a(r.laps).map(l=>({n:String(l&&l.n!=null?l.n:''),t:n(l&&l.t),d:n(l&&l.d)})),hr:r.hr&&Number(r.hr.avg)>0?{avg:Math.round(Number(r.hr.avg)),max:Number(r.hr.max)>0?Math.round(Number(r.hr.max)):undefined}:null}}
 runs=(Array.isArray(runs)?runs:[]).map(normRun).filter(r=>r.dist>0&&r.time>0);
-let S={st:'idle',pts:[],dist:0,act:0,last:0,splits:[],sg:[],si:0,s0:{e:0,d:0},laps:[],wid:null,tick:null,wl:null,gap:true,ptT:0,start:0};
+let S={st:'idle',pts:[],dist:0,act:0,last:0,splits:[],sg:[],si:0,s0:{e:0,d:0},laps:[],mlaps:[],wid:null,tick:null,wl:null,gap:true,ptT:0,start:0};
 const pad=n=>String(n).padStart(2,'0');
 const fT=s=>{s=Math.round(s);const h=Math.floor(s/3600),m=Math.floor(s%3600/60);return(h?h+':'+pad(m):m)+':'+pad(s%60)};
 const fP=p=>{if(!isFinite(p)||p<=0||p>1800)return'–:––';p=Math.round(p);return Math.floor(p/60)+':'+pad(p%60)};
@@ -371,16 +409,16 @@ const MAPS=new Map();
 function showRoute(box,P,live,hint){
  if(!window.L){let c=box.querySelector('canvas');if(!c){box.innerHTML='<canvas class="cv"></canvas>';c=box.firstChild}return drawRoute(c,P,hint)}
  let m=MAPS.get(box);
- if(!m){const map=L.map(box,{zoomControl:false,preferCanvas:true}).setView([0,0],2);L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(map);m={map,g:L.layerGroup().addTo(map),n:1};MAPS.set(box,m)}
+ if(!m){const map=L.map(box,{zoomControl:false,preferCanvas:true}).setView([0,0],2);L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(map);m={map,g:L.layerGroup().addTo(map),n:1};MAPS.set(box,m);map.on('dragstart',()=>{m.follow=false;if(box.id==='recMap')$('#recCenter').classList.add('off')});if(box.id==='recMap'){map.attributionControl.setPosition('topright');map.attributionControl.setPrefix(false)}}
  const map=m.map;map.invalidateSize();
- if(P.length<m.n){m.g.clearLayers();m.n=1;m.s=m.c=null}
+ if(P.length<m.n){m.g.clearLayers();m.n=1;m.s=m.c=null;m.follow=true;if(box.id==='recMap')$('#recCenter').classList.remove('off')}
  if(!P.length)return;
  const col=(a,b)=>{const dt=b[3]-a[3],v=dt>0?(b[2]-a[2])/dt:0,t=v>0?Math.min(1,Math.max(0,(480-1000/v)/270)):0;return`hsl(${225+t*135},85%,50%)`};
  for(let i=m.n;i<P.length;i++)L.polyline([[P[i-1][0],P[i-1][1]],[P[i][0],P[i][1]]],{color:col(P[Math.max(0,i-5)],P[i]),weight:6}).addTo(m.g);
  m.n=P.length;const f=P[0],l=P[P.length-1],mk=(q,c)=>L.circleMarker([q[0],q[1]],{radius:7,color:'#fff',weight:3,fillColor:c,fillOpacity:1}).addTo(m.g);
  if(!m.s)m.s=mk(f,'#0C8A4B');
- if(P.length>1){if(m.c)m.c.setLatLng([l[0],l[1]]);else m.c=mk(l,'#10222E')}
- if(live)map.getZoom()<16?map.setView([l[0],l[1]],17):map.panTo([l[0],l[1]]);
+ if(m.c)m.c.setLatLng([l[0],l[1]]);else m.c=mk(l,'#1E66F5');
+ if(live&&m.follow!==false)map.getZoom()<16?map.setView([l[0],l[1]],17):map.panTo([l[0],l[1]]);
  else if(!m.f){map.fitBounds(P.map(q=>[q[0],q[1]]),{padding:[24,24],maxZoom:18});m.f=1}
 }
 
@@ -390,37 +428,63 @@ async function connHR(){try{const d=await navigator.bluetooth.requestDevice({fil
  ch.addEventListener('characteristicvaluechanged',e=>{const v=e.target.value,b=v.getUint8(0)&1?v.getUint16(1,true):v.getUint8(1);$('#hr').hidden=false;$('#hr').textContent='♥ '+b;if(S.st==='running')hrv.push(b)});
  await ch.startNotifications();$('#bhr').textContent='Monitor conectado'}catch(e){if(e.name!=='NotFoundError')alert('Não foi possível conectar ao monitor cardíaco.')}}
 
-/* Foto com estatísticas (como no Strada) */
-async function cardDraw(r,img){
- try{await document.fonts.load('700 100px "Barlow Condensed"')}catch(e){}
- const lg=await new Promise(res=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>res(null);i.src='logo.png'});
- const c=$('#pc'),W=1080,H=1350,g=c.getContext('2d'),F="'Barlow Condensed','Arial Narrow',sans-serif";c.width=W;c.height=H;
- if(img){const k=Math.max(W/img.width,H/img.height),w=img.width*k,h=img.height*k;g.drawImage(img,(W-w)/2,(H-h)/2,w,h)}
- else{const gr=g.createLinearGradient(0,0,W,H);gr.addColorStop(0,'#0B3BD9');gr.addColorStop(.45,'#050A1C');gr.addColorStop(1,'#02040F');g.fillStyle=gr;g.fillRect(0,0,W,H);g.lineCap='round';[[-80,520,900,60,.5],[200,900,1200,320,.35],[-50,300,500,-30,.3]].forEach(l=>{g.strokeStyle='rgba(60,200,255,'+l[4]+')';g.lineWidth=6;g.beginPath();g.moveTo(l[0],l[1]);g.lineTo(l[2],l[3]);g.stroke()})}
- let sh=g.createLinearGradient(0,H*.5,0,H);sh.addColorStop(0,'rgba(0,0,0,0)');sh.addColorStop(1,'rgba(0,0,0,.8)');g.fillStyle=sh;g.fillRect(0,H*.5,W,H*.5);
- sh=g.createLinearGradient(0,0,0,380);sh.addColorStop(0,'rgba(0,0,0,.55)');sh.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=sh;g.fillRect(0,0,W,380);
- const P=r.pts;
- if(P.length>1){const la=P.map(q=>q[0]),lo=P.map(q=>q[1]),a0=Math.min(...la),a1=Math.max(...la),o0=Math.min(...lo),o1=Math.max(...lo),k=Math.cos((a0+a1)/2*Math.PI/180),sx=Math.max((o1-o0)*k,2e-5),sy=Math.max(a1-a0,2e-5),bw=300,sc=Math.min(bw/sx,bw/sy),ox=W-60-bw+(bw-sx*sc)/2,oy=60+(bw-sy*sc)/2;
-  g.strokeStyle='#fff';g.lineWidth=9;g.lineCap=g.lineJoin='round';g.beginPath();P.forEach((q,i)=>{const x=ox+(q[1]-o0)*k*sc,y=oy+(a1-q[0])*sc;i?g.lineTo(x,y):g.moveTo(x,y)});g.stroke()}
- g.shadowColor='rgba(0,0,0,.45)';g.shadowBlur=14;g.fillStyle='#fff';g.textAlign='left';
- g.font=`600 46px ${F}`;g.fillText(new Date(r.date).toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'}),60,215);if(profile.name)g.fillText(profile.name,60,268);
- g.font=`700 250px ${F}`;const t=fK(r.dist);g.fillText(t,56,1010);const w=g.measureText(t).width;g.font=`600 70px ${F}`;g.fillText('km',56+w+18,1010);
- const it=[[fP(r.time/(r.dist/1000)),'ritmo /km'],[fT(r.time),'tempo']];if(r.hr)it.push([r.hr.avg,'bpm médio']);
- it.forEach((x,i)=>{const px=60+i*340;g.font=`700 112px ${F}`;g.fillText(x[0],px,1210);g.font=`600 40px ${F}`;g.globalAlpha=.85;g.fillText(x[1],px,1262);g.globalAlpha=1});
- if(lg){g.shadowBlur=0;g.drawImage(lg,60,50,lg.width/lg.height*110,110)}
- c.style.display='block';$('#fb').hidden=false}
-function photoCard(r){
- sheet(`<h1>Foto da corrida</h1><div class="btns"><label class="lb">Tirar foto<input type="file" accept="image/*" capture="environment" id="f1" hidden></label><label class="lb">Escolher da galeria<input type="file" accept="image/*" id="f2" hidden></label></div>
- <canvas id="pc" style="width:100%;border-radius:14px;margin-top:12px;display:none"></canvas>
- <div class="btns" id="fb" style="margin-top:12px" hidden><button class="sec" id="fs">Compartilhar</button><button class="main" id="fd">Salvar na galeria</button></div>
- <button class="link" id="fx">Voltar</button>`);
- const load=e=>{const f=e.target.files[0];if(!f)return;const img=new Image();img.onload=()=>{cardDraw(r,img);URL.revokeObjectURL(img.src)};img.src=URL.createObjectURL(f)};
+/* Compartilhar corrida: mapa do trajeto, foto (câmera ou galeria) ou fundo Pista */
+const autoTitle=ts=>{const h=new Date(ts).getHours();return h<5?'Corrida de madrugada':h<11?'Corrida da manhã':h<14?'Corrida ao meio-dia':h<17?'Corrida da tarde':h<19?'Corrida ao entardecer':'Corrida à noite'};
+const fDur=t=>{t=Math.round(t);const h=Math.floor(t/3600),m=Math.floor(t%3600/60);return h?`${h} h ${m} min`:`${m} min ${t%60} s`};
+const loadImg=(u,cors)=>new Promise(ok=>{const i=new Image();if(cors)i.crossOrigin='anonymous';i.onload=()=>ok(i);i.onerror=()=>ok(null);i.src=u;setTimeout(()=>ok(null),7000)});
+let LOGO_P;const getLogo=()=>LOGO_P||(LOGO_P=loadImg('logo.png'));
+const SW=1080,SH=1920,newCv=()=>{const c=document.createElement('canvas');c.width=SW;c.height=SH;return c};
+function paceCol(a,b){const dt=b[3]-a[3],v=dt>0?(b[2]-a[2])/dt:0,t=v>0?Math.min(1,Math.max(0,(480-1000/v)/270)):0;return`hsl(${225+t*135},85%,50%)`}
+function drawTrack(g,P,X,Y,wd){g.lineCap=g.lineJoin='round';g.strokeStyle='#fff';g.lineWidth=wd+8;g.beginPath();P.forEach((q,i)=>i?g.lineTo(X(q),Y(q)):g.moveTo(X(q),Y(q)));g.stroke();
+ g.lineWidth=wd;for(let i=1;i<P.length;i++){g.strokeStyle=paceCol(P[Math.max(0,i-5)],P[i]);g.beginPath();g.moveTo(X(P[i-1]),Y(P[i-1]));g.lineTo(X(P[i]),Y(P[i]));g.stroke()}
+ [[P[0],'#0C8A4B'],[P[P.length-1],'#10222E']].forEach(([q,c])=>{g.fillStyle=c;g.strokeStyle='#fff';g.lineWidth=8;g.beginPath();g.arc(X(q),Y(q),15,0,7);g.stroke();g.fill()})}
+function bgBrand(r){const c=newCv(),g=c.getContext('2d'),gr=g.createLinearGradient(0,0,SW,SH);gr.addColorStop(0,'#0B3BD9');gr.addColorStop(.45,'#050A1C');gr.addColorStop(1,'#02040F');g.fillStyle=gr;g.fillRect(0,0,SW,SH);g.lineCap='round';
+ [[-80,700,1000,60,.5],[250,1500,1250,520,.35],[-50,300,520,-30,.3]].forEach(l=>{g.strokeStyle='rgba(60,200,255,'+l[4]+')';g.lineWidth=7;g.beginPath();g.moveTo(l[0],l[1]);g.lineTo(l[2],l[3]);g.stroke()});
+ const P=r.pts;if(P.length>1){const la=P.map(q=>q[0]),lo=P.map(q=>q[1]),a0=Math.min(...la),a1=Math.max(...la),o0=Math.min(...lo),o1=Math.max(...lo),k=Math.cos((a0+a1)/2*Math.PI/180),sx=Math.max((o1-o0)*k,2e-5),sy=Math.max(a1-a0,2e-5),sc=Math.min(SW*.78/sx,SH*.46/sy),ox=(SW-sx*sc)/2,oy=SH*.42-sy*sc/2;drawTrack(g,P,q=>ox+(q[1]-o0)*k*sc,q=>oy+(a1-q[0])*sc,10)}return c}
+function bgPhoto(img){const c=newCv(),g=c.getContext('2d'),k=Math.max(SW/img.width,SH/img.height),w=img.width*k,h=img.height*k;g.drawImage(img,(SW-w)/2,(SH-h)/2,w,h);return c}
+async function bgMap(r){
+ const P=r.pts;if(P.length<2)return null;
+ const mx=l=>(l+180)/360,my=a=>{const q=a*Math.PI/180;return(1-Math.log(Math.tan(q)+1/Math.cos(q))/Math.PI)/2},ZS=2;
+ const lo=P.map(q=>q[1]),la=P.map(q=>q[0]),l0=Math.min(...lo),l1=Math.max(...lo),a0=Math.min(...la),a1=Math.max(...la);
+ let z=17;for(;z>2;z--){const n=2**z;if((mx(l1)-mx(l0))*n*256*ZS<=SW*.78&&Math.abs(my(a0)-my(a1))*n*256*ZS<=SH*.46)break}
+ const n=2**z,cx=(mx(l0)+mx(l1))/2*n,cy=(my(a0)+my(a1))/2*n,oy=SH*.42,ts=256*ZS;
+ const c=newCv(),g=c.getContext('2d');g.fillStyle='#EDEDED';g.fillRect(0,0,SW,SH);
+ const x0=Math.floor(cx-SW/2/ts),x1=Math.floor(cx+SW/2/ts),y0=Math.floor(cy-oy/ts),y1=Math.floor(cy+(SH-oy)/ts),jobs=[];
+ for(let x=x0;x<=x1;x++)for(let y=y0;y<=y1;y++){if(y<0||y>=n)continue;jobs.push(loadImg(`https://tile.openstreetmap.org/${z}/${((x%n)+n)%n}/${y}.png`,true).then(im=>({im,x,y})))}
+ const res=await Promise.all(jobs);if(res.filter(t=>t.im).length<res.length*.6)return null;
+ g.filter='grayscale(.65) brightness(1.06)';res.forEach(t=>{if(t.im)g.drawImage(t.im,(t.x-cx)*ts+SW/2,(t.y-cy)*ts+oy,ts,ts)});g.filter='none';
+ drawTrack(g,P,q=>(mx(q[1])*n-cx)*ts+SW/2,q=>(my(q[0])*n-cy)*ts+oy,12);return c}
+function cardCompose(r,bg,title,mode,lg){
+ const c=$('#pc'),g=c.getContext('2d'),F="Barlow,system-ui,sans-serif";c.width=SW;c.height=SH;g.drawImage(bg,0,0);
+ const sh=g.createLinearGradient(0,SH*.6,0,SH);sh.addColorStop(0,'rgba(0,0,0,0)');sh.addColorStop(1,'rgba(0,0,0,.74)');g.fillStyle=sh;g.fillRect(0,SH*.6,SW,SH*.4);
+ g.textAlign='left';g.fillStyle='#fff';g.shadowColor='rgba(0,0,0,.4)';g.shadowBlur=10;
+ let fs=62;g.font=`600 ${fs}px ${F}`;while(g.measureText(title).width>640&&fs>34){fs-=3;g.font=`600 ${fs}px ${F}`}g.fillText(title,75,1712);
+ if(lg){g.shadowBlur=0;const h=92,w=lg.width/lg.height*h;g.drawImage(lg,SW-70-w,1712-h+14,w,h);g.shadowBlur=10}
+ const it=[['Distância',fK(r.dist)+' km'],['Ritmo',fP(r.time/(r.dist/1000))+' /km'],['Tempo',fDur(r.time)]];if(r.hr)it.push(['Batimentos',r.hr.avg+' bpm']);
+ const cw=(SW-150)/it.length;it.forEach((x,i)=>{const px=75+i*(it.length===3?325:cw);g.font=`500 32px ${F}`;g.globalAlpha=.9;g.fillText(x[0],px,1790);g.globalAlpha=1;g.font=`600 ${it.length===3?66:54}px ${F}`;g.fillText(x[1],px,1862)});
+ if(mode==='map'){g.shadowBlur=0;g.font=`500 24px ${F}`;g.globalAlpha=.8;g.fillText('© OpenStreetMap',75,1648);g.globalAlpha=1}}
+function photoCard(r,fromFinish){
+ let mode=r.pts.length>1?'map':'brand',img=null,title=r.title||autoTitle(r.date);const cache={};
+ sheet(`<h1>Compartilhar corrida</h1>
+ <label for="pcT" style="margin-top:0">Título</label><input type="text" id="pcT" maxlength="40" value="${esc(title)}">
+ <div class="ob-chips" id="pcM" style="margin-top:12px">${r.pts.length>1?'<button class="ob-chip" data-m="map">Mapa do trajeto</button>':''}<button class="ob-chip" data-m="brand">Fundo Pista</button></div>
+ <div class="btns"><label class="lb">Tirar foto<input type="file" accept="image/*" capture="environment" id="f1" hidden></label><label class="lb">Galeria<input type="file" accept="image/*" id="f2" hidden></label></div>
+ <canvas id="pc" style="display:block;max-height:56vh;max-width:100%;width:auto;margin:12px auto 0;border-radius:14px"></canvas>
+ <div class="btns" id="fb" style="margin-top:12px"><button class="sec" id="fs">Compartilhar</button><button class="main" id="fd">Salvar na galeria</button></div>
+ <button class="link" id="fx" style="width:100%;text-align:center">${fromFinish?'Concluir':'Voltar'}</button>`);
+ const bgOf=async()=>{if(!cache[mode])cache[mode]=mode==='photo'?bgPhoto(img):mode==='map'?((await bgMap(r))||bgBrand(r)):bgBrand(r);return cache[mode]};
+ let tk=0;const draw=async()=>{const my=++tk;document.querySelectorAll('#pcM .ob-chip').forEach(b=>b.classList.toggle('on',b.dataset.m===mode));$('#pc').style.opacity=.35;
+  try{await Promise.all([document.fonts.load('600 40px Barlow'),document.fonts.load('500 32px Barlow')])}catch(e){}
+  const [bg,lg]=await Promise.all([bgOf(),getLogo()]);if(my!==tk)return;cardCompose(r,bg,title,mode,lg);$('#pc').style.opacity=1};
+ document.querySelectorAll('#pcM .ob-chip').forEach(b=>b.onclick=()=>{mode=b.dataset.m;draw()});
+ $('#pcT').oninput=e=>{title=e.target.value;draw()};
+ const load=e=>{const f=e.target.files[0];if(!f)return;const im=new Image();im.onload=()=>{img=im;delete cache.photo;mode='photo';draw()};im.src=URL.createObjectURL(f)};
  $('#f1').onchange=$('#f2').onchange=load;
- const nm='pista-'+new Date(r.date).toISOString().slice(0,10)+'.jpg',blob=cb=>$('#pc').toBlob(cb,'image/jpeg',.92);
- $('#fd').onclick=()=>blob(b=>saveFile(b,nm));
- $('#fs').onclick=()=>blob(b=>{if(NATIVE)return saveFile(b,nm);const f=new File([b],nm,{type:'image/jpeg'});if(navigator.canShare&&navigator.canShare({files:[f]}))navigator.share({files:[f],title:'Minha corrida'}).catch(()=>{});else alert('Compartilhar não está disponível aqui. Use Salvar na galeria.')});
- $('#fx').onclick=()=>{close();openRun(r.id)};
- cardDraw(r,null)}
+ const nm='pista-'+new Date(r.date).toISOString().slice(0,10)+'.jpg',blob=cb=>$('#pc').toBlob(cb,'image/jpeg',.92),keep=()=>{r.title=title.trim()||autoTitle(r.date);store.set('pista.runs',runs)};
+ $('#fd').onclick=()=>{keep();blob(b=>saveFile(b,nm))};
+ $('#fs').onclick=()=>{keep();blob(b=>{if(NATIVE)return saveFile(b,nm);const f=new File([b],nm,{type:'image/jpeg'});if(navigator.canShare&&navigator.canShare({files:[f]}))navigator.share({files:[f],title:'Minha corrida'}).catch(()=>{});else alert('Compartilhar não está disponível aqui. Use Salvar na galeria.')})};
+ $('#fx').onclick=()=>{keep();close();openRun(r.id)};
+ draw()}
 
 /* Treinos com intervalos */
 const PRE=[{nome:'Corrida livre'},{nome:'6 × 400 m',aq:'10min',rep:6,tiro:'400m',desc:'90s',des:'5min'},{nome:'5 × 1 km',aq:'10min',rep:5,tiro:'1km',desc:'2min',des:'5min'},{nome:'Fartlek 8 × 1 min',aq:'8min',rep:8,tiro:'1min',desc:'2min',des:'5min'}];
@@ -468,15 +532,15 @@ function curPace(){const P=S.pts,n=P.length;if(n<2)return NaN;const b=P[n-1];if(
  for(let i=n-2;i>=0;i--){const dd=b[2]-P[i][2],de=b[3]-P[i][3];if((de>=20&&dd>=30)||i===0)return dd>5?de/(dd/1000):NaN}return NaN}
 let lastSessionSave=0;
 function live(){segTick();if($('#s0').classList.contains('on'))liveUI();if(S.st!=='idle'&&Date.now()-lastSessionSave>15000){saveActiveSession();lastSessionSave=Date.now()}}
-function liveUI(){segUI();$('#dist').textContent=fK(S.dist);$('#tm').textContent=fT(el());$('#cp').textContent=fP(curPace());$('#ap').textContent=fP(S.dist>=50?el()/(S.dist/1000):NaN);showRoute($('#map'),S.pts,S.st==='running')}
+function liveUI(){segUI();if(S.st!=='idle'){recUI();return}$('#dist').textContent=fK(S.dist);$('#tm').textContent=fT(el());$('#cp').textContent=fP(curPace());$('#ap').textContent=fP(S.dist>=50?el()/(S.dist/1000):NaN);showRoute($('#map'),S.pts,S.st==='running')}
 function ui(){const m=$('#bmain'),e=$('#bend');
  if(S.st==='idle'){m.textContent='Iniciar corrida';m.className='main';e.disabled=true}
  else if(S.st==='running'){m.textContent='Pausar';m.className='main dark';e.disabled=false}
  else{m.textContent='Continuar';m.className='main';e.disabled=false}
- $('#bman').hidden=$('#bplan').hidden=S.st!=='idle';$('#bplan').textContent='Treino: '+(plan?plan.nome:'corrida livre');chip();live()}
+ $('#bman').hidden=$('#bplan').hidden=S.st!=='idle';$('#bplan').textContent='Treino: '+(plan?plan.nome:'corrida livre');syncRec();chip();live()}
 function stop(){gpsStop();clearInterval(S.tick);try{S.wl&&S.wl.release()}catch(e){}S.wl=null}
-function reset(){stop();clearActiveSession();S={st:'idle',pts:[],dist:0,act:0,last:0,splits:[],sg:[],si:0,s0:{e:0,d:0},laps:[],wid:null,tick:null,wl:null,gap:true,ptT:0,start:0};gps=null;ui()}
-function start(){
+function reset(){stop();clearActiveSession();S={st:'idle',pts:[],dist:0,act:0,last:0,splits:[],sg:[],si:0,s0:{e:0,d:0},laps:[],mlaps:[],wid:null,tick:null,wl:null,gap:true,ptT:0,start:0};gps=null;ui()}
+function startNow(){
  if(!BG&&!navigator.geolocation){alert('Este navegador não tem acesso a GPS.');return}
  S.st='running';S.last=Date.now();S.start=Date.now();S.gap=true;hrv=[];S.sg=segs(plan);S.si=0;S.s0={e:0,d:0};S.laps=[];if(S.sg.length)say(S.sg[0].n+', '+lab(S.sg[0]));
  gpsStart();
@@ -529,12 +593,12 @@ function finish(){
  if(S.dist<100){if(confirm('Corrida com menos de 100 m. Descartar?')){reset()}else{if(wasRun)S.last=Date.now(),S.st='running';ui()}return}
  if(!confirm('Finalizar e salvar a corrida?')){if(wasRun)S.last=Date.now(),S.st='running';ui();return}
  const q=S.sg[S.si];if(q&&S.act/1000-S.s0.e>5)S.laps.push({n:q.n,t:+(S.act/1000-S.s0.e).toFixed(1),d:Math.round(S.dist-S.s0.d)});
- const best={};[5000,10000].forEach(m=>{const t=bestDistanceTime({pts:S.pts},m);if(t)best[m]=+t.toFixed(1)});const gpsStats=routeStats(S.pts);const r={id:Date.now(),date:S.start,dist:S.dist,time:S.act/1000,best,pts:thin(S.pts),splits:S.splits,laps:S.laps,gpsStats,hr:hrv.length?{avg:Math.round(hrv.reduce((a,b)=>a+b)/hrv.length),max:Math.max(...hrv)}:null};
- runs.push(r);store.set('pista.runs',runs);clearActiveSession();reset();openRun(r.id)}
+ const best={};[5000,10000].forEach(m=>{const t=bestDistanceTime({pts:S.pts},m);if(t)best[m]=+t.toFixed(1)});const gpsStats=routeStats(S.pts);const r={id:Date.now(),date:S.start,dist:S.dist,time:S.act/1000,best,pts:thin(S.pts),splits:S.splits,laps:S.laps,mlaps:S.mlaps,gpsStats,hr:hrv.length?{avg:Math.round(hrv.reduce((a,b)=>a+b)/hrv.length),max:Math.max(...hrv)}:null};
+ runs.push(r);store.set('pista.runs',runs);clearActiveSession();reset();photoCard(r,true)}
 $('#bmain').onclick=toggle;$('#bend').onclick=finish;
 
 /* Telas */
-function tab(n){document.querySelectorAll('.scr').forEach(x=>x.classList.toggle('on',x.id==='s'+n));document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on',+a.dataset.t===n));
+function tab(n){document.querySelectorAll('.scr').forEach(x=>x.classList.toggle('on',x.id==='s'+n));document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on',+a.dataset.t===n));curTab=n;syncRec();
  if(n==0)live();if(n==1)renderList();if(n==3)renderPerformance();if(n==4)renderProfile();if(n==5)renderCoach();$('main').scrollTop=0}
 document.querySelectorAll('nav a').forEach(a=>a.onclick=e=>{e.preventDefault();tab(+a.dataset.t)});
 const sorted=()=>[...runs].sort((a,b)=>b.date-a.date);
@@ -571,7 +635,7 @@ function restoreActiveSession(){
  S={...S,...saved,st:'paused',wid:null,tick:null,wl:null,last:0,gap:true};
  if(!Number.isFinite(S.act))S.act=0;if(!Number.isFinite(S.dist))S.dist=0;
  if(S.pts.length&&S.pts.length>100000)S.pts=S.pts.slice(-100000);
- if(age>24*60*60*1000){clearActiveSession();S={st:'idle',pts:[],dist:0,act:0,last:0,splits:[],sg:[],si:0,s0:{e:0,d:0},laps:[],wid:null,tick:null,wl:null,gap:true,ptT:0,start:0};return}
+ if(age>24*60*60*1000){clearActiveSession();S={st:'idle',pts:[],dist:0,act:0,last:0,splits:[],sg:[],si:0,s0:{e:0,d:0},laps:[],mlaps:[],wid:null,tick:null,wl:null,gap:true,ptT:0,start:0};return}
  alert('Encontramos uma corrida não finalizada. Ela foi recuperada em pausa. Toque em Continuar para retomar ou Finalizar para salvar.');
 }
 
@@ -786,6 +850,7 @@ function openRun(id){const r=runs.find(x=>x.id==id);if(!r)return;
  ${r.pts.length?'<div id="dmap"></div>':''}
  <div class="stats"><div><b class="num">${fT(r.time)}</b><span>Tempo</span></div><div><b class="num">${fP(r.time/(r.dist/1000))}</b><span>Ritmo médio /km</span></div><div><b class="num">${r.pts.length?Math.round(r.dist/r.time*3.6*10)/10:'–'}</b><span>km/h</span></div></div>
  ${sp?'<h2>Parciais por km (ritmo)</h2>'+sp:''}
+ ${r.mlaps&&r.mlaps.length?'<h2>Voltas</h2>'+r.mlaps.map((l,i)=>{const q=r.mlaps[i-1]||[0,0],pd=l[0]-q[0],pt=l[1]-q[1];return `<div class="row" style="padding:5px 0;border-bottom:1px solid var(--line)"><span>Volta ${i+1}</span><span class="num">${fK(pd)} km · ${fT(pt)} · ${fP(pt/(pd/1000))}</span></div>`}).join(''):''}
  ${r.laps&&r.laps.length?'<h2>Treino</h2>'+r.laps.map(l=>`<div class="row" style="padding:5px 0;border-bottom:1px solid var(--line)"><span>${esc(l.n)}</span><span class="num">${fT(l.t)} · ${l.d} m · ${fP(l.t/(l.d/1000))}</span></div>`).join(''):''}
  <button class="main" id="xf" style="width:100%;margin-top:18px">Criar foto com estatísticas</button>
  <div class="btns" style="margin-top:10px">${r.pts.length?'<button class="sec" id="xg">Exportar GPX</button>':''}<button class="sec" id="xh">♥ bpm</button><button class="sec danger" id="xd">Excluir</button><button class="main" id="xc">Fechar</button></div>`);
@@ -823,9 +888,48 @@ if(seen)sp.remove();else{try{sessionStorage.setItem('pista.sp','1')}catch(e){}
  v.onended=endSplash;v.onerror=()=>{clearTimeout(spT);spT=setTimeout(endSplash,1200)};
  v.src='intro.mp4';sp.appendChild(v);try{const pr=v.play();if(pr&&pr.catch)pr.catch(()=>{v.muted=true;v.play().catch(()=>{})})}catch(e){}}
 try{if(navigator.storage&&navigator.storage.persist){const pp=navigator.storage.persist();if(pp&&pp.catch)pp.catch(()=>{})}}catch(e){}
-if(NATIVE)try{capPlugin('LocalNotifications').requestPermissions().catch(()=>{})}catch(e){}
 navAvatar();restoreActiveSession();
 ui();
+/* Notificações: sem elas o Android troca a notificação do Pista por um aviso genérico que abre "Informações do app" */
+let notifOK=null,notifIgnore=false;
+async function ensureNotif(){
+ if(!NATIVE)return true;
+ try{const LN=capPlugin('LocalNotifications');if(!LN||!LN.checkPermissions)return true;
+  let st=(await LN.checkPermissions()).display;if(st!=='granted')st=(await LN.requestPermissions()).display;return st==='granted'}catch(e){return true}}
+function bgGuide(block){return new Promise(ok=>{
+ sheet(`<h1>${block?'Ative as notificações':'Gravar com a tela bloqueada'}</h1>
+ <p class="note">${block?'As notificações do Pista estão desativadas. Sem elas, o Android mostra só um aviso genérico (“Pista está em execução”) que abre as informações do app, e a gravação pode parar com a tela bloqueada.':'Para o GPS continuar com a tela bloqueada, confira estes ajustes no celular:'}</p>
+ <ol class="note" style="padding-left:20px"><li><b>Notificações:</b> Configurações &gt; Apps &gt; Pista &gt; Notificações &gt; permitir.</li><li><b>Localização:</b> permitir “Durante o uso do app” (ou “Sempre”).</li><li><b>Pausar atividade do app quando sem uso:</b> desligue (em Apps &gt; Pista).</li><li><b>Bateria:</b> em Apps &gt; Pista, escolha “Sem restrições” e ative a inicialização automática (Xiaomi).</li></ol>
+ <div class="btns" style="margin-top:14px">${block?'<button class="sec" id="ngC">Cancelar</button><button class="main" id="ngG">Gravar assim mesmo</button>':'<button class="main" id="ngG">Entendi</button>'}</div>`);
+ const c=$('#ngC');if(c)c.onclick=()=>{close();ok(false)};$('#ngG').onclick=()=>{close();ok(true)}})}
+async function start(){
+ if(NATIVE&&!notifIgnore){notifOK=await ensureNotif();if(!notifOK){const go=await bgGuide(true);if(!go)return;notifIgnore=true}}
+ startNow()}
+$('#bgHelp').onclick=()=>bgGuide(false);
+
+/* Tela de gravação em tela cheia (mapa, cartão de dados e botões grandes) */
+let curTab=0;
+const SVG_I=(x,w=28)=>`<svg viewBox="0 0 24 24" width="${w}" height="${w}" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${x}</svg>`;
+const I_PAUSE=SVG_I('<rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor"/><rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor"/>'),I_PLAY=SVG_I('<path d="M8 5v14l11-7z" fill="currentColor"/>'),I_LOOP=SVG_I('<path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v5h-5"/>'),I_FLAG=SVG_I('<path d="M6 21V4M6 5h11l-2 4 2 4H6"/>');
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),2600)}
+function syncRec(){const show=S.st!=='idle'&&curTab===0;$('#rec').hidden=!show;document.body.classList.toggle('rec',show);
+ const a=document.querySelector('nav a[data-t="0"]>span');if(a)a.textContent=S.st==='idle'?'Correr':'Gravando';
+ if(S.st==='running'){$('#rMain').innerHTML=I_PAUSE+'Pausar';$('#rSec').innerHTML=I_LOOP+'Volta';$('#rSec').className=''}
+ else if(S.st==='paused'){$('#rMain').innerHTML=I_PLAY+'Continuar';$('#rSec').innerHTML=I_FLAG+'Finalizar';$('#rSec').className='fin'}}
+function recUI(){
+ $('#rWarn').hidden=!(NATIVE&&notifOK===false);
+ $('#rTm').textContent=fT(el());$('#rAp').textContent=fP(S.dist>=50?el()/(S.dist/1000):NaN);$('#rDist').textContent=fK(S.dist);$('#rCp').textContent=fP(curPace());$('#rLaps').textContent=S.mlaps.length;
+ const ch=$('#chip');$('#rGps').textContent=ch.textContent;$('#rGps').className='rec-gps '+ch.className;
+ $('#rHr').textContent=$('#hr').hidden?'—':$('#hr').textContent.replace('♥ ','');
+ $('#rTitle').textContent=S.sg.length&&plan?plan.nome:'Corrida';
+ const sg=$('#seg');$('#rSeg').hidden=sg.hidden;$('#rSeg').innerHTML=sg.innerHTML;
+ showRoute($('#recMap'),S.pts,S.st==='running')}
+function lap(){const e=el(),d=S.dist,q=S.mlaps[S.mlaps.length-1]||[0,0],dd=d-q[0],dt=e-q[1];S.mlaps.push([+d.toFixed(1),+e.toFixed(1)]);
+ const t=`Volta ${S.mlaps.length}: ${fK(dd)} km · ${fP(dd>=20?dt/(dd/1000):NaN)} /km`;toast(t);say('Volta '+S.mlaps.length);recUI()}
+$('#rMain').onclick=toggle;$('#rSec').onclick=()=>{S.st==='running'?lap():finish()};
+$('#recBack').onclick=()=>tab(1);$('#rExp').onclick=()=>$('#recCard').classList.toggle('open');
+$('#recCenter').onclick=()=>{const m=MAPS.get($('#recMap')),P=S.pts,l=P[P.length-1];if(!m)return;m.follow=true;$('#recCenter').classList.remove('off');if(l)m.map.setView([l[0],l[1]],Math.max(m.map.getZoom(),17))};
+
 /* Questionário inicial: define nível, objetivo, dias, meta semanal e cuidados de saúde */
 const OB_RACE=new Set(['5k','10k','half','marathon']);let OB={i:0,a:{}};
 const OB_Q={

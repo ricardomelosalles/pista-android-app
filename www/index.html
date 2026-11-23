@@ -252,6 +252,7 @@ body.rec nav{display:none}
 .me b{position:absolute;inset:0;border-radius:50%;background:#1565D8;border:3px solid #fff;box-shadow:0 1px 6px rgba(0,0,0,.45)}
 .me .cone{position:absolute;left:50%;bottom:50%;width:70px;height:70px;margin-left:-35px;transform-origin:50% 100%;background:linear-gradient(to top,rgba(21,101,216,.65),rgba(21,101,216,0));clip-path:polygon(50% 100%,8% 0,92% 0)}
 .sdot{width:18px;height:18px;border-radius:50%;background:#0C8A4B;border:3px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.4);pointer-events:none}
+.leaflet-control-attribution{font-size:10px!important;padding:1px 6px!important;background:rgba(255,255,255,.7)!important;color:#4A5A66!important}.leaflet-control-attribution a{color:inherit!important;pointer-events:none}
 </style>
 </head>
 <body>
@@ -492,7 +493,7 @@ function showRoute(box,P,live,hint){
  if(box.id==='recMap'&&!GLFAIL&&window.MAPAGL){const m0=MAPS.get(box);if(!m0||m0.gl){try{return showRouteGL(box,P,live)}catch(e){console.warn(e);glFail(box)}}}
  if(!window.L){let c=box.querySelector('canvas');if(!c){box.innerHTML='<canvas class="cv"></canvas>';c=box.firstChild}return drawRoute(c,P,hint)}
  let m=MAPS.get(box);
- if(!m){const map=L.map(box,{zoomControl:false,preferCanvas:true}).setView([0,0],2);L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(map);m={map,g:L.layerGroup().addTo(map),n:1};MAPS.set(box,m);map.on('dragstart',()=>{m.follow=false;if(box.id==='recMap')$('#recCenter').classList.add('off')});if(box.id==='recMap'){map.attributionControl.setPosition('topright');map.attributionControl.setPrefix(false)}}
+ if(!m){const map=L.map(box,{zoomControl:false,preferCanvas:true}).setView([0,0],2);L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(map);m={map,g:L.layerGroup().addTo(map),n:1};MAPS.set(box,m);map.on('dragstart',()=>{m.follow=false;if(box.id==='recMap')$('#recCenter').classList.add('off')});map.attributionControl.setPrefix(false);if(box.id==='recMap'){map.attributionControl.setPosition('topright')}}
  const map=m.map;map.invalidateSize();
  if(P.length<m.n){m.g.clearLayers();m.n=1;m.s=m.c=null;m.follow=true;if(box.id==='recMap')$('#recCenter').classList.remove('off')}
  if(!P.length)return;

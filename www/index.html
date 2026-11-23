@@ -11,7 +11,7 @@
 <title>Pista – corrida com GPS</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="vendor/leaflet.css"><link rel="stylesheet" href="vendor/mapa.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap"></noscript>
@@ -233,6 +233,25 @@ body.rec nav{display:none}
 #rMain{background:linear-gradient(135deg,#1747E0,#2D7BFF);color:#fff;box-shadow:0 4px 16px rgba(45,123,255,.4)}
 #rSec{background:#EEF1F4;color:#10222E}#rSec.fin{color:#C62F3B}
 #toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 80px);transform:translateX(-50%);background:rgba(16,34,46,.94);color:#fff;padding:10px 16px;border-radius:99px;z-index:9500;font-weight:600;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap}#toast.on{opacity:1}
+
+/* ===== mapa vetorial: 3D, bússola, camadas, direção ===== */
+#recMap{background:#EDEFF1}
+.rec-col{position:absolute;z-index:1000;right:14px;top:34%;display:flex;flex-direction:column;gap:14px}
+.rec-col .rec-fab{position:relative}.rec-col #recCenter{right:auto;top:auto}
+.rec-fab.txt{font-size:20px;font-weight:700;letter-spacing:.01em}
+#recNorth{right:14px;top:calc(env(safe-area-inset-top,0px) + 14px);width:48px;height:48px}
+.rec-badge{position:absolute;right:-4px;top:-4px;min-width:22px;height:22px;padding:0 5px;border-radius:11px;background:#10222E;color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.rec-badge[hidden]{display:none}
+.rec-pop{position:absolute;z-index:1001;right:78px;top:34%;background:#fff;border-radius:14px;box-shadow:0 4px 18px rgba(0,0,0,.25);padding:6px 16px;color:#10222E}
+.rec-pop[hidden]{display:none}
+.rec-pop label{display:flex;align-items:center;gap:12px;padding:10px 0;margin:0;font-size:16px;color:#10222E;font-weight:600}
+.rec-pop input{width:22px;height:22px;min-height:0;margin:0;accent-color:#FA5200}
+.rec-credit{position:absolute;z-index:999;right:14px;top:calc(env(safe-area-inset-top,0px) + 68px);font-size:10px;color:#4A5A66;background:rgba(255,255,255,.72);border-radius:6px;padding:1px 6px}
+#rec.nogl #recNorth,#rec.nogl #recLayers,#rec.nogl #rec3d,#rec.nogl #recPop,#rec.nogl .rec-credit{display:none}
+.me{width:22px;height:22px;pointer-events:none}
+.me b{position:absolute;inset:0;border-radius:50%;background:#1565D8;border:3px solid #fff;box-shadow:0 1px 6px rgba(0,0,0,.45)}
+.me .cone{position:absolute;left:50%;bottom:50%;width:70px;height:70px;margin-left:-35px;transform-origin:50% 100%;background:linear-gradient(to top,rgba(21,101,216,.65),rgba(21,101,216,0));clip-path:polygon(50% 100%,8% 0,92% 0)}
+.sdot{width:18px;height:18px;border-radius:50%;background:#0C8A4B;border:3px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.4);pointer-events:none}
 </style>
 </head>
 <body>
@@ -338,10 +357,10 @@ window.addEventListener('error',function(e){rm();var d=document.createElement('d
  <button class="rec-fab" id="recBack" aria-label="Voltar"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
  <span class="rec-gps" id="rGps">GPS</span>
  <div class="rec-warn" id="rWarn" hidden>Notificações desativadas: a gravação pode parar com a tela bloqueada.</div>
- <button class="rec-fab" id="recCenter" aria-label="Centralizar no mapa"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg></button>
+ <button class="rec-fab" id="recNorth" aria-label="Voltar para o norte"><svg id="recNorthIc" viewBox="0 0 48 48" width="40" height="40" aria-hidden="true"><path d="M24 4l-5 8h10z" fill="#E5322D"/><text x="24" y="32" text-anchor="middle" font-size="16" font-weight="800" fill="#10222E" font-family="system-ui,sans-serif">N</text></svg></button><span class="rec-credit">© OpenStreetMap · OpenMapTiles</span><div class="rec-col"><button class="rec-fab" id="recLayers" aria-label="Camadas do mapa"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 12.5l9 5 9-5"/><path d="M3 17l9 5 9-5"/></svg><span class="rec-badge" id="recBadge">1</span></button><button class="rec-fab txt" id="rec3d" aria-label="Alternar 3D">3D</button><button class="rec-fab" id="recCenter" aria-label="Centralizar no mapa"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg></button></div><div class="rec-pop" id="recPop" hidden><label><input type="checkbox" id="popPoi" checked>Lugares no mapa</label><label><input type="checkbox" id="popB3d">Prédios em 3D</label></div>
  <div class="rec-card" id="recCard">
   <div class="rec-hd"><b id="rTitle">Corrida</b><button id="rExp" aria-label="Mostrar mais dados"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg></button></div>
-  <div class="rec-grid"><div><b class="num" id="rTm">0:00</b><span>Tempo</span></div><div><b class="num" id="rAp">-:--</b><span>Média (/km)</span></div><div><b class="num" id="rDist">0,00</b><span>Distância (km)</span></div></div>
+  <div class="rec-grid"><div><b class="num" id="rTm">0:00</b><span>Tempo</span></div><div><b class="num" id="rAp">-:--</b><span style="white-space:nowrap">Média parcial (/km)</span></div><div><b class="num" id="rDist">0,00</b><span>Distância (km)</span></div></div>
   <div class="rec-more"><div class="rec-grid"><div><b class="num" id="rCp">-:--</b><span>Ritmo atual</span></div><div><b class="num" id="rHr">—</b><span>Batimentos</span></div><div><b class="num" id="rLaps">0</b><span>Voltas</span></div></div><div id="rSeg" hidden></div></div>
  </div>
  <div class="rec-sheet"><div class="rec-btns"><button id="rMain"></button><button id="rSec"></button></div></div>
@@ -350,7 +369,12 @@ window.addEventListener('error',function(e){rm();var d=document.createElement('d
 <div id="ob" hidden><div class="ob-top"><button id="obBack" aria-label="Voltar">‹</button><div class="ob-prog"><i id="obBar"></i></div><span id="obCount"></span></div><div class="ob-main" id="obBody"></div><div class="ob-foot"><button class="main" id="obNext" style="width:100%">Continuar</button><button class="link" id="obSkip" style="width:100%;text-align:center">Pular por agora</button></div></div>
 <div id="sheet" hidden><div id="sin"></div></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="vendor/leaflet.js"></script>
+<script type="module">
+import*as G from './vendor/mapa.js';
+G.setWorkerUrl(new URL('./vendor/mapa-worker.js',import.meta.url).href);
+window.MAPAGL=G;
+</script>
 <script>
 const $=s=>document.querySelector(s);
 const store={get(k,d){try{const v=JSON.parse(localStorage.getItem(k));return v==null?d:v}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){alert('Sem espaço para salvar. Exporte e apague corridas antigas.')}}};
@@ -366,7 +390,7 @@ function gpsStart(){
  if(!BG){S.wid=navigator.geolocation.watchPosition(onPos,onErr,{enableHighAccuracy:true,maximumAge:0,timeout:20000});return}
  S.wid=BG.addWatcher({backgroundTitle:'Pista · gravando corrida',backgroundMessage:'Toque para voltar ao app.',requestPermissions:true,stale:false,distanceFilter:0},(l,e)=>{
   if(e){onErr({code:e.code==='NOT_AUTHORIZED'?1:2});return}
-  onPos({coords:{accuracy:l.accuracy,latitude:l.latitude,longitude:l.longitude,altitude:l.altitude},timestamp:l.time})})}
+  onPos({coords:{accuracy:l.accuracy,latitude:l.latitude,longitude:l.longitude,altitude:l.altitude,heading:l.bearing,speed:l.speed},timestamp:l.time})})}
 function gpsStop(){const w=S.wid;S.wid=null;if(w==null)return;
  if(BG)Promise.resolve(w).then(id=>BG.removeWatcher({id})).catch(()=>{});else navigator.geolocation.clearWatch(w)}
 async function saveFile(blob,name,text){
@@ -406,7 +430,66 @@ function drawRoute(cv,P,hint){
 
 /* Mapa de ruas (Leaflet + OpenStreetMap); sem internet cai para o desenho simples */
 const MAPS=new Map();
+
+/* ===== Mapa vetorial da gravação (3D, rotação, bússola, direção) ===== */
+const LIVE={lat:null,lon:null,hd:null,sp:0,acc:null},DEV={hd:null,q:0};let GLFAIL=0;
+const GLSTYLE='https://tiles.openfreemap.org/styles/liberty';
+(function(){const R=Math.PI/180;
+ const h=e=>{let v=null;
+  if(typeof e.webkitCompassHeading==='number')v=e.webkitCompassHeading;
+  else if(e.absolute&&e.alpha!=null&&e.beta!=null&&e.gamma!=null){const a=e.alpha*R,b=e.beta*R,g=e.gamma*R,cA=Math.cos(a),sA=Math.sin(a),sB=Math.sin(b),cB=Math.cos(b),sG=Math.sin(g),cG=Math.cos(g),rA=-cA*sG-sA*sB*cG,rB=-sA*sG+cA*sB*cG;v=Math.hypot(rA,rB)<.3?(360-e.alpha)%360:Math.atan2(rA,rB)/R;if(v<0)v+=360}
+  if(v==null||!Number.isFinite(v))return;
+  DEV.hd=DEV.hd==null?v:(DEV.hd+((v-DEV.hd+540)%360-180)*.25+360)%360;
+  if(!DEV.q){DEV.q=1;requestAnimationFrame(()=>{DEV.q=0;glPos()})}};
+ window.addEventListener('deviceorientationabsolute',h,true);window.addEventListener('deviceorientation',h,true)})();
+function hsl2hex(h,s,l){h=(((h%360)+360)%360)/360;const q=l<.5?l*(1+s):l+s-l*s,p=2*l-q,f=t=>{t=(t+1)%1;if(t<1/6)return p+(q-p)*6*t;if(t<.5)return q;if(t<2/3)return p+(q-p)*(2/3-t)*6;return p},c=t=>Math.round(f(t)*255).toString(16).padStart(2,'0');return'#'+c(h+1/3)+c(h)+c(h-1/3)}
+function paceCol(a,b){const dt=b[3]-a[3],v=dt>0?(b[2]-a[2])/dt:0,t=v>0?Math.min(1,Math.max(0,(480-1000/v)/270)):0;return hsl2hex(225+t*135,.85,.5)}
+function glFail(box){GLFAIL=1;const m=MAPS.get(box);if(m&&m.map){try{m.map.remove()}catch(e){}}MAPS.delete(box);box.innerHTML='';box.className='';const r=document.getElementById('rec');if(r)r.classList.add('nogl')}
+function glPosLL(m){if(LIVE.lat!=null)return[LIVE.lon,LIVE.lat];const P=(m&&m.P)||[],l=P[P.length-1];return l?[l[1],l[0]]:null}
+function glDot(m){const ll=glPosLL(m);if(!ll||!m.me)return;m.me.setLngLat(ll);m.meEl.style.display='';
+ const mv=LIVE.sp>=1&&LIVE.hd!=null,h=mv?LIVE.hd:(DEV.hd!=null?DEV.hd:LIVE.hd);
+ if(h==null||!Number.isFinite(h))m.cone.style.display='none';else{m.cone.style.display='';m.cone.style.transform='rotate('+(h-m.map.getBearing())+'deg)'}}
+function glPos(){const b=document.getElementById('recMap'),m=b&&MAPS.get(b);if(m&&m.gl&&m.me)glDot(m)}
+function glApply(m){let st;try{st=m.map.getStyle()}catch(e){return}if(!st)return;
+ st.layers.forEach(l=>{if(/^poi/.test(l.id))m.map.setLayoutProperty(l.id,'visibility',m.pois?'visible':'none');else if(/^building-3d/.test(l.id))m.map.setLayoutProperty(l.id,'visibility',m.b3d?'visible':'none')});
+ const n=(m.pois?1:0)+(m.b3d?1:0),bd=document.getElementById('recBadge');if(bd){bd.textContent=n;bd.hidden=!n}}
+function glInit(m){const map=m.map;if(m.ready)return;
+ if(!map.getSource('rt'))map.addSource('rt',{type:'geojson',data:{type:'FeatureCollection',features:m.feats}});
+ const lay={'line-cap':'round','line-join':'round'};
+ if(!map.getLayer('rt-casing'))map.addLayer({id:'rt-casing',type:'line',source:'rt',layout:lay,paint:{'line-color':'#ffffff','line-width':10,'line-opacity':.9}});
+ if(!map.getLayer('rt-line'))map.addLayer({id:'rt-line',type:'line',source:'rt',layout:lay,paint:{'line-color':['to-color',['get','c']],'line-width':6}});
+ m.ready=true;glApply(m);m.dirty=1;glUpdate(m)}
+function glUpdate(m){const P=m.P||[],map=m.map,box=m.box;
+ if(box.clientWidth!==m.w||box.clientHeight!==m.h){m.w=box.clientWidth;m.h=box.clientHeight;map.resize()}
+ if(P.length<m.n&&m.n>1){m.feats=[];m.n=1;if(m.st){m.st.remove();m.st=null}m.follow=true;m.f=0;m.dirty=1;document.getElementById('recCenter').classList.remove('off')}
+ for(let i=m.n;i<P.length;i++){m.feats.push({type:'Feature',properties:{c:paceCol(P[Math.max(0,i-5)],P[i])},geometry:{type:'LineString',coordinates:[[P[i-1][1],P[i-1][0]],[P[i][1],P[i][0]]]}});m.dirty=1}
+ m.n=P.length||1;
+ if(m.ready&&m.dirty){const sc=map.getSource('rt');if(sc){sc.setData({type:'FeatureCollection',features:m.feats});m.dirty=0}}
+ if(P.length&&!m.st){const e=document.createElement('div');e.className='sdot';m.st=new window.MAPAGL.Marker({element:e,anchor:'center'}).setLngLat([P[0][1],P[0][0]]).addTo(map)}
+ glDot(m);const ll=glPosLL(m);
+ if(m.live&&m.follow!==false&&ll){if(map.getZoom()<16)map.jumpTo({center:ll,zoom:17});else map.easeTo({center:ll,duration:800,essential:true});m.f=1}
+ else if(!m.f&&P.length){const b=new window.MAPAGL.LngLatBounds();P.forEach(q=>b.extend([q[1],q[0]]));map.fitBounds(b,{padding:24,maxZoom:18,duration:0});m.f=1}
+ else if(!m.f&&ll){map.jumpTo({center:ll,zoom:17});m.f=1}}
+function showRouteGL(box,P,live){
+ const GL=window.MAPAGL;let m=MAPS.get(box);
+ if(!m){
+  const last=P.length?P[P.length-1]:null,c0=LIVE.lat!=null?[LIVE.lon,LIVE.lat]:last?[last[1],last[0]]:[0,0];
+  const map=new GL.Map({container:box,style:GLSTYLE,center:c0,zoom:(LIVE.lat!=null||last)?17:2,attributionControl:false,maxPitch:70,pitchWithRotate:true,dragRotate:true,touchPitch:true,fadeDuration:150});
+  m={gl:true,map,box,n:1,feats:[],follow:true,ready:false,styleOk:false,pois:true,b3d:false,P:[],live:false};MAPS.set(box,m);
+  const el=document.createElement('div');el.className='me';el.innerHTML='<i class="cone"></i><b></b>';el.style.display='none';
+  m.meEl=el;m.cone=el.firstChild;m.me=new GL.Marker({element:el,anchor:'center'}).setLngLat([0,0]).addTo(map);
+  const tryInit=()=>{if(m.ready)return;try{glInit(m)}catch(e){}};
+  map.on('styledata',()=>{m.styleOk=true;tryInit()});map.on('load',tryInit);
+  map.on('error',()=>{if(!m.ready&&!m.styleOk&&!m.fb){m.fb=1;glFail(box);try{recUI()}catch(e){}}});
+  map.on('dragstart',()=>{m.follow=false;document.getElementById('recCenter').classList.add('off')});
+  map.on('click',()=>{document.getElementById('recPop').hidden=true});
+  const nIc=document.getElementById('recNorthIc'),b3=document.getElementById('rec3d');
+  map.on('rotate',()=>{nIc.style.transform='rotate('+(-map.getBearing())+'deg)';glDot(m)});
+  map.on('pitchend',()=>{b3.textContent=map.getPitch()>10?'2D':'3D'});
+ }
+ m.P=P;m.live=!!live;glUpdate(m)}
 function showRoute(box,P,live,hint){
+ if(box.id==='recMap'&&!GLFAIL&&window.MAPAGL){const m0=MAPS.get(box);if(!m0||m0.gl){try{return showRouteGL(box,P,live)}catch(e){console.warn(e);glFail(box)}}}
  if(!window.L){let c=box.querySelector('canvas');if(!c){box.innerHTML='<canvas class="cv"></canvas>';c=box.firstChild}return drawRoute(c,P,hint)}
  let m=MAPS.get(box);
  if(!m){const map=L.map(box,{zoomControl:false,preferCanvas:true}).setView([0,0],2);L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(map);m={map,g:L.layerGroup().addTo(map),n:1};MAPS.set(box,m);map.on('dragstart',()=>{m.follow=false;if(box.id==='recMap')$('#recCenter').classList.add('off')});if(box.id==='recMap'){map.attributionControl.setPosition('topright');map.attributionControl.setPrefix(false)}}
@@ -511,7 +594,9 @@ function chip(){const c=$('#chip');if(S.st==='idle'){c.textContent='GPS desligad
  if(gps==null){c.textContent='Buscando sinal…';c.className='fraco'}else if(gps<=15){c.textContent='GPS forte';c.className='ok'}else{c.textContent='GPS fraco';c.className='fraco'}}
 function onErr(e){if(e.code===1){alert('Permita o acesso à localização para registrar a corrida.');reset()}else{gps=null;chip()}}
 function onPos(p){
- const a=p.coords.accuracy;gps=a;chip();
+ const a=p.coords.accuracy;
+ {const la=Number(p.coords.latitude),lo=Number(p.coords.longitude);if(Number.isFinite(la)&&Number.isFinite(lo)&&Math.abs(la)<=90&&Math.abs(lo)<=180){LIVE.lat=la;LIVE.lon=lo;LIVE.acc=a;const h=Number(p.coords.heading),sp=p.coords.speed==null?NaN:Number(p.coords.speed);LIVE.sp=Number.isFinite(sp)?sp:0;if(p.coords.heading!=null&&Number.isFinite(h)&&h>=0&&(sp>=1||!Number.isFinite(sp)))LIVE.hd=h;glPos()}}
+ gps=a;chip();
  if(S.st!=='running'||!Number.isFinite(a)||a>30)return;
  const lat=Number(p.coords.latitude),lon=Number(p.coords.longitude);if(!Number.isFinite(lat)||!Number.isFinite(lon)||Math.abs(lat)>90||Math.abs(lon)>180)return;
  const pt=[+lat.toFixed(6),+lon.toFixed(6)],n=S.pts.length,q=S.pts[n-1];
@@ -926,9 +1011,16 @@ function recUI(){
  showRoute($('#recMap'),S.pts,S.st==='running')}
 function lap(){const e=el(),d=S.dist,q=S.mlaps[S.mlaps.length-1]||[0,0],dd=d-q[0],dt=e-q[1];S.mlaps.push([+d.toFixed(1),+e.toFixed(1)]);
  const t=`Volta ${S.mlaps.length}: ${fK(dd)} km · ${fP(dd>=20?dt/(dd/1000):NaN)} /km`;toast(t);say('Volta '+S.mlaps.length);recUI()}
+
+{const gm=()=>{const m=MAPS.get($('#recMap'));return m&&m.gl?m:null};
+$('#recNorth').onclick=()=>{const m=gm();if(m)m.map.easeTo({bearing:0,duration:400})};
+$('#rec3d').onclick=()=>{const m=gm();if(m)m.map.easeTo({pitch:m.map.getPitch()>10?0:60,duration:500})};
+$('#recLayers').onclick=()=>{$('#recPop').hidden=!$('#recPop').hidden};
+$('#popPoi').onchange=e=>{const m=gm();if(m){m.pois=e.target.checked;glApply(m)}};
+$('#popB3d').onchange=e=>{const m=gm();if(m){m.b3d=e.target.checked;glApply(m);if(m.b3d&&m.map.getPitch()<10)m.map.easeTo({pitch:60,duration:500})}}}
 $('#rMain').onclick=toggle;$('#rSec').onclick=()=>{S.st==='running'?lap():finish()};
 $('#recBack').onclick=()=>tab(1);$('#rExp').onclick=()=>$('#recCard').classList.toggle('open');
-$('#recCenter').onclick=()=>{const m=MAPS.get($('#recMap')),P=S.pts,l=P[P.length-1];if(!m)return;m.follow=true;$('#recCenter').classList.remove('off');if(l)m.map.setView([l[0],l[1]],Math.max(m.map.getZoom(),17))};
+$('#recCenter').onclick=()=>{const m=MAPS.get($('#recMap')),P=S.pts,l=P[P.length-1];if(!m)return;if(m.gl){m.follow=true;$('#recCenter').classList.remove('off');const ll=glPosLL(m);if(ll)m.map.easeTo({center:ll,zoom:Math.max(m.map.getZoom(),17),duration:500});return}m.follow=true;$('#recCenter').classList.remove('off');if(l)m.map.setView([l[0],l[1]],Math.max(m.map.getZoom(),17))};
 
 /* Questionário inicial: define nível, objetivo, dias, meta semanal e cuidados de saúde */
 const OB_RACE=new Set(['5k','10k','half','marathon']);let OB={i:0,a:{}};

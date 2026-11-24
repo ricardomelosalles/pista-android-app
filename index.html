@@ -14,7 +14,7 @@
 <link rel="stylesheet" href="vendor/leaflet.css"><link rel="stylesheet" href="vendor/mapa.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" media="print" onload="this.media='all'">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap"></noscript>
+<noscript><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap"></noscript></noscript>
 <style>
 :root{--bg:#F3F6FA;--card:#fff;--ink:#10222E;--mut:#5C6F7C;--line:#D6DEE6;--acc:#1747E0;--onacc:#fff;--bad:#C62F3B;color-scheme:light}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -253,6 +253,47 @@ body.rec nav{display:none}
 .me .cone{position:absolute;left:50%;bottom:50%;width:70px;height:70px;margin-left:-35px;transform-origin:50% 100%;background:linear-gradient(to top,rgba(21,101,216,.65),rgba(21,101,216,0));clip-path:polygon(50% 100%,8% 0,92% 0)}
 .sdot{width:18px;height:18px;border-radius:50%;background:#0C8A4B;border:3px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.4);pointer-events:none}
 .leaflet-control-attribution{font-size:10px!important;padding:1px 6px!important;background:rgba(255,255,255,.7)!important;color:#4A5A66!important}.leaflet-control-attribution a{color:inherit!important;pointer-events:none}
+/* correções: mapa por cima do resumo, botões cortados e botão de fechar sempre visível */
+.leaflet-container,#recMap{isolation:isolate}
+#sheet{z-index:3000}
+.btns{flex-wrap:wrap}
+.btns>.sec,.btns>.lb{flex:1 1 0;min-width:0;padding:14px 6px;font-size:16px}
+.shfoot{position:sticky;bottom:calc(-16px - env(safe-area-inset-bottom,0px));z-index:3;background:var(--bg);padding:10px 0 calc(16px + env(safe-area-inset-bottom,0px));margin-top:8px}
+.shfoot>button.main{display:block;width:100%}
+.shfoot>.btns{margin-top:0!important}
+/* ===== tela de gravação ampliada ===== */
+#rBig{position:absolute;inset:0;z-index:1002;background:#fff;color:#000;display:flex;flex-direction:column;align-items:center;padding:calc(env(safe-area-inset-top,0px) + 12px) 16px 150px;overflow:hidden}
+#rBig[hidden]{display:none}
+#rec.big .rec-sheet{z-index:1003}
+.rb-top{display:flex;width:100%;justify-content:center;position:relative}
+#rBigX{position:absolute;left:0;top:50%;transform:translateY(-50%);padding:8px;color:#000}
+.rb-t{font-size:min(17vw,84px);font-weight:700;line-height:1.1}
+.rb-p{font-size:min(38vw,170px);font-weight:700;line-height:1;margin-top:4vh}
+.rb-l{color:#5f6368;font-size:20px;font-weight:600;margin-top:6px;text-align:center}
+.rb-row{display:grid;grid-template-columns:1fr 1fr;width:100%;margin-top:4vh;text-align:center}
+.rb-row b{display:block;font-size:min(13vw,56px);font-weight:700;line-height:1.1}.rb-row span{font-size:18px;color:#5f6368;font-weight:600}
+#bX{margin-top:8px;color:#5f6368;font-weight:600;min-height:1.2em}
+#bSeg{margin-top:6px;text-align:center}#bSeg b{font-size:22px}
+#bSp{display:flex;gap:12px;align-items:flex-end;width:100%;margin-top:3vh}
+.bs{flex:1;display:flex;flex-direction:column;justify-content:flex-end}
+.bs em{font-style:normal;font-weight:700;font-size:17px;text-align:left;min-height:22px}
+.bs i{display:block;background:#E0E0E0;border-radius:8px}.bs i.on{background:#0A5CD6}
+.bs u{display:block;height:5px;background:#FA5200;border-radius:3px;margin-top:2px}
+/* ===== tela Salvar atividade ===== */
+#save{position:fixed;inset:0;z-index:3500;background:#fff;color:#10222E;display:flex;flex-direction:column;align-items:center}
+#save[hidden]{display:none}
+#save>*{width:100%;max-width:640px;box-sizing:border-box}
+.sv-hd{display:flex;align-items:center;gap:14px;padding:calc(env(safe-area-inset-top,0px) + 10px) 14px 10px;border-bottom:1px solid #E3E8EC}
+.sv-hd h1{font-size:26px;margin:0;font-weight:800}.sv-hd button{padding:8px;color:#10222E}
+.sv-body{flex:1;overflow-y:auto;padding:16px 16px 24px}
+#save input,#save select,#save textarea{display:block;width:100%;box-sizing:border-box;margin:0 0 12px;padding:14px;border:1px solid #CCD4DA;border-radius:10px;background:#fff;color:#10222E;font:500 17px Barlow,system-ui,sans-serif}
+#save textarea{resize:none}
+#svmap{height:180px;border-radius:14px;overflow:hidden;margin:0 0 8px;border:1px solid #E3E8EC}
+.sv-stats{font-weight:700;color:#4A5A66;margin:0 0 6px}
+#save h2{font-size:24px;margin:18px 0 10px;color:#10222E}
+.sv-del{width:100%;border:1.5px solid #D32F2F;color:#D32F2F;background:#fff;border-radius:999px;padding:14px;margin-top:10px}
+.sv-foot{padding:10px 16px calc(12px + env(safe-area-inset-bottom,0px));border-top:1px solid #E3E8EC;background:#fff}
+.sv-foot button{width:100%;background:#000;color:#fff;border-radius:999px;padding:16px;font-size:20px}
 </style>
 </head>
 <body>
@@ -360,22 +401,26 @@ window.addEventListener('error',function(e){rm();var d=document.createElement('d
  <div class="rec-warn" id="rWarn" hidden>Notificações desativadas: a gravação pode parar com a tela bloqueada.</div>
  <button class="rec-fab" id="recNorth" aria-label="Voltar para o norte"><svg id="recNorthIc" viewBox="0 0 48 48" width="40" height="40" aria-hidden="true"><path d="M24 4l-5 8h10z" fill="#E5322D"/><text x="24" y="32" text-anchor="middle" font-size="16" font-weight="800" fill="#10222E" font-family="system-ui,sans-serif">N</text></svg></button><span class="rec-credit">© OpenStreetMap · OpenMapTiles</span><div class="rec-col"><button class="rec-fab" id="recLayers" aria-label="Camadas do mapa"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 12.5l9 5 9-5"/><path d="M3 17l9 5 9-5"/></svg><span class="rec-badge" id="recBadge">1</span></button><button class="rec-fab txt" id="rec3d" aria-label="Alternar 3D">3D</button><button class="rec-fab" id="recCenter" aria-label="Centralizar no mapa"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg></button></div><div class="rec-pop" id="recPop" hidden><label><input type="checkbox" id="popPoi" checked>Lugares no mapa</label><label><input type="checkbox" id="popB3d">Prédios em 3D</label></div>
  <div class="rec-card" id="recCard">
-  <div class="rec-hd"><b id="rTitle">Corrida</b><button id="rExp" aria-label="Mostrar mais dados"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg></button></div>
+  <div class="rec-hd"><b id="rTitle">Corrida</b><button id="rExp" aria-label="Ver dados ampliados"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg></button></div>
   <div class="rec-grid"><div><b class="num" id="rTm">0:00</b><span>Tempo</span></div><div><b class="num" id="rAp">-:--</b><span style="white-space:nowrap">Média parcial (/km)</span></div><div><b class="num" id="rDist">0,00</b><span>Distância (km)</span></div></div>
   <div class="rec-more"><div class="rec-grid"><div><b class="num" id="rCp">-:--</b><span>Ritmo atual</span></div><div><b class="num" id="rHr">—</b><span>Batimentos</span></div><div><b class="num" id="rLaps">0</b><span>Voltas</span></div></div><div id="rSeg" hidden></div></div>
+ </div>
+ <div id="rBig" hidden>
+  <div class="rb-top"><button id="rBigX" aria-label="Voltar ao mapa"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10h-6V4M4 14h6v6M14 10l7-7M3 21l7-7"/></svg></button><div class="rb-t num" id="bTm">0:00</div></div>
+  <div class="rb-p num" id="bAp">–:––</div><div class="rb-l">Média parcial (/km)</div>
+  <div class="rb-row"><div><b class="num" id="bDist">0,00</b><span>Distância (km)</span></div><div><b class="num" id="bCp">–:––</b><span>Ritmo atual (/km)</span></div></div>
+  <div id="bX"></div><div id="bSeg" hidden></div>
+  <div id="bSp"></div><div class="rb-l">Parciais (/km)</div>
  </div>
  <div class="rec-sheet"><div class="rec-btns"><button id="rMain"></button><button id="rSec"></button></div></div>
 </div>
 <div id="toast"></div>
 <div id="ob" hidden><div class="ob-top"><button id="obBack" aria-label="Voltar">‹</button><div class="ob-prog"><i id="obBar"></i></div><span id="obCount"></span></div><div class="ob-main" id="obBody"></div><div class="ob-foot"><button class="main" id="obNext" style="width:100%">Continuar</button><button class="link" id="obSkip" style="width:100%;text-align:center">Pular por agora</button></div></div>
+<div id="save" hidden><div class="sv-hd"><button id="svBack" aria-label="Voltar"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 5l-7 7 7 7"/></svg></button><h1>Salvar atividade</h1></div><div class="sv-body" id="svBody"></div><div class="sv-foot"><button id="svSave">Salvar atividade</button></div></div>
 <div id="sheet" hidden><div id="sin"></div></div>
 
 <script src="vendor/leaflet.js"></script>
-<script type="module">
-import*as G from './vendor/mapa.js';
-G.setWorkerUrl(new URL('./vendor/mapa-worker.js',import.meta.url).href);
-window.MAPAGL=G;
-</script>
+
 <script>
 const $=s=>document.querySelector(s);
 const store={get(k,d){try{const v=JSON.parse(localStorage.getItem(k));return v==null?d:v}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){alert('Sem espaço para salvar. Exporte e apague corridas antigas.')}}};
@@ -433,7 +478,9 @@ function drawRoute(cv,P,hint){
 const MAPS=new Map();
 
 /* ===== Mapa vetorial da gravação (3D, rotação, bússola, direção) ===== */
-const LIVE={lat:null,lon:null,hd:null,sp:0,acc:null},DEV={hd:null,q:0};let GLFAIL=0;
+const LIVE={lat:null,lon:null,hd:null,sp:0,acc:null},DEV={hd:null,q:0};let GLFAIL=0,glLoading=0;
+function glLoad(){if(glLoading||window.MAPAGL)return;glLoading=1;import('./vendor/mapa.js').then(G=>{G.setWorkerUrl(new URL('./vendor/mapa-worker.js',document.baseURI).href);window.MAPAGL=G;try{recUI()}catch(e){}}).catch(e=>{console.warn(e);GLFAIL=1;try{recUI()}catch(x){}})}
+addEventListener('load',()=>setTimeout(glLoad,S.st==='idle'?3000:0));
 const GLSTYLE='https://tiles.openfreemap.org/styles/liberty';
 (function(){const R=Math.PI/180;
  const h=e=>{let v=null;
@@ -490,7 +537,7 @@ function showRouteGL(box,P,live){
  }
  m.P=P;m.live=!!live;glUpdate(m)}
 function showRoute(box,P,live,hint){
- if(box.id==='recMap'&&!GLFAIL&&window.MAPAGL){const m0=MAPS.get(box);if(!m0||m0.gl){try{return showRouteGL(box,P,live)}catch(e){console.warn(e);glFail(box)}}}
+ if(box.id==='recMap'&&!GLFAIL){const m0=MAPS.get(box);if(!m0||m0.gl){if(window.MAPAGL){try{return showRouteGL(box,P,live)}catch(e){console.warn(e);glFail(box)}}else{glLoad();return}}}
  if(!window.L){let c=box.querySelector('canvas');if(!c){box.innerHTML='<canvas class="cv"></canvas>';c=box.firstChild}return drawRoute(c,P,hint)}
  let m=MAPS.get(box);
  if(!m){const map=L.map(box,{zoomControl:false,preferCanvas:true}).setView([0,0],2);L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(map);m={map,g:L.layerGroup().addTo(map),n:1};MAPS.set(box,m);map.on('dragstart',()=>{m.follow=false;if(box.id==='recMap')$('#recCenter').classList.add('off')});map.attributionControl.setPrefix(false);if(box.id==='recMap'){map.attributionControl.setPosition('topright')}}
@@ -554,8 +601,8 @@ function photoCard(r,fromFinish){
  <div class="ob-chips" id="pcM" style="margin-top:12px">${r.pts.length>1?'<button class="ob-chip" data-m="map">Mapa do trajeto</button>':''}<button class="ob-chip" data-m="brand">Fundo Pista</button></div>
  <div class="btns"><label class="lb">Tirar foto<input type="file" accept="image/*" capture="environment" id="f1" hidden></label><label class="lb">Galeria<input type="file" accept="image/*" id="f2" hidden></label></div>
  <canvas id="pc" style="display:block;max-height:56vh;max-width:100%;width:auto;margin:12px auto 0;border-radius:14px"></canvas>
- <div class="btns" id="fb" style="margin-top:12px"><button class="sec" id="fs">Compartilhar</button><button class="main" id="fd">Salvar na galeria</button></div>
- <button class="link" id="fx" style="width:100%;text-align:center">${fromFinish?'Concluir':'Voltar'}</button>`);
+ <div class="shfoot"><div class="btns" id="fb"><button class="sec" id="fs">Compartilhar</button><button class="main" id="fd">Salvar na galeria</button></div>
+ <button class="link" id="fx" style="width:100%;text-align:center;margin-top:6px">${fromFinish?'Concluir':'Voltar'}</button></div>`);
  const bgOf=async()=>{if(!cache[mode])cache[mode]=mode==='photo'?bgPhoto(img):mode==='map'?((await bgMap(r))||bgBrand(r)):bgBrand(r);return cache[mode]};
  let tk=0;const draw=async()=>{const my=++tk;document.querySelectorAll('#pcM .ob-chip').forEach(b=>b.classList.toggle('on',b.dataset.m===mode));$('#pc').style.opacity=.35;
   try{await Promise.all([document.fonts.load('600 40px Barlow'),document.fonts.load('500 32px Barlow')])}catch(e){}
@@ -610,7 +657,7 @@ function onPos(p){
 }
 function say(t){if(!$('#voz').checked||!window.speechSynthesis)return;const u=new SpeechSynthesisUtterance(t);u.lang='pt-BR';speechSynthesis.speak(u)}
 async function lock(){try{if(navigator.wakeLock&&S.st==='running')S.wl=await navigator.wakeLock.request('screen')}catch(e){}}
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')lock();else saveActiveSession()});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')lock();else{saveActiveSession();try{localStorage.setItem('pista.lastOpen',String(Date.now()))}catch(e){}}});
 window.addEventListener('pagehide',saveActiveSession);
 window.addEventListener('beforeunload',e=>{if(S.st!=='idle'){e.preventDefault();e.returnValue=''}});
 
@@ -688,13 +735,34 @@ function bestDistanceTime(run,meters){
 }
 function formatSpeed(kmh){return Number.isFinite(kmh)&&kmh>0?kmh.toFixed(1).replace('.',',')+' km/h':'—'}
 
+/* ===== Salvar atividade (após finalizar) ===== */
+const EFFORT=['Muito leve','Leve','Leve','Moderado','Moderado','Forte','Forte','Muito forte','Muito forte','Máximo'];
+function svClose(){MAPS.forEach((m,b)=>{if(b.id==='svmap'){try{m.map.remove()}catch(e){}MAPS.delete(b)}});$('#save').hidden=true;$('#svBody').innerHTML=''}
+function saveScreen(r){
+ const gears=[...new Set(runs.map(x=>x.gear).filter(Boolean))];
+ $('#svBody').innerHTML=`<input id="svT" type="text" maxlength="60" placeholder="Dê um título para sua corrida" value="${esc(r.title||autoTitle(r.date))}">
+ <textarea id="svD" rows="3" maxlength="500" placeholder="Como foi? Compartilhe mais informações sobre sua atividade.">${esc(r.desc||'')}</textarea>
+ <select id="svY"><option>Corrida</option><option>Caminhada</option><option>Trilha</option></select>
+ ${r.pts.length>1?'<div id="svmap"></div>':''}
+ <div class="sv-stats">${fK(r.dist)} km · ${fT(r.time)} · ${fP(r.time/(r.dist/1000))} /km</div>
+ <h2>Detalhes</h2>
+ <select id="svE"><option value="">Qual foi seu grau de esforço?</option>${EFFORT.map((t,i)=>`<option value="${i+1}">${i+1} – ${t}</option>`).join('')}</select>
+ <textarea id="svN" rows="3" maxlength="500" placeholder="Anote suas observações privadas aqui. Somente você poderá vê-las.">${esc(r.notes||'')}</textarea>
+ <input id="svG" type="text" list="svGl" maxlength="40" placeholder="Equipamento (ex.: tênis)" value="${esc(r.gear||'')}"><datalist id="svGl">${gears.map(g=>`<option value="${esc(g)}">`).join('')}</datalist>
+ <button class="sv-del" id="svDel">Descartar atividade</button>`;
+ $('#svY').value=r.type||'Corrida';$('#svE').value=r.effort||'';
+ $('#save').hidden=false;$('#svBody').scrollTop=0;
+ if(r.pts.length>1)showRoute($('#svmap'),r.pts,false);
+ $('#svBack').onclick=()=>{svClose();toast('Corrida salva')};
+ $('#svSave').onclick=()=>{r.title=$('#svT').value.trim()||autoTitle(r.date);r.desc=$('#svD').value.trim();r.type=$('#svY').value;r.effort=+$('#svE').value||0;r.notes=$('#svN').value.trim();r.gear=$('#svG').value.trim();store.set('pista.runs',runs);svClose();renderList();toast('Atividade salva');photoCard(r,true)};
+ $('#svDel').onclick=()=>{if(confirm('Descartar esta atividade? Ela será excluída.')){runs=runs.filter(x=>x.id!==r.id);store.set('pista.runs',runs);svClose();renderList();renderGoals();toast('Atividade descartada')}}}
 function finish(){
  const wasRun=S.st==='running';if(wasRun)S.act+=Date.now()-S.last;S.st='paused';
  if(S.dist<100){if(confirm('Corrida com menos de 100 m. Descartar?')){reset()}else{if(wasRun)S.last=Date.now(),S.st='running';ui()}return}
  if(!confirm('Finalizar e salvar a corrida?')){if(wasRun)S.last=Date.now(),S.st='running';ui();return}
  const q=S.sg[S.si];if(q&&S.act/1000-S.s0.e>5)S.laps.push({n:q.n,t:+(S.act/1000-S.s0.e).toFixed(1),d:Math.round(S.dist-S.s0.d)});
  const best={};[5000,10000].forEach(m=>{const t=bestDistanceTime({pts:S.pts},m);if(t)best[m]=+t.toFixed(1)});const gpsStats=routeStats(S.pts);const r={id:Date.now(),date:S.start,dist:S.dist,time:S.act/1000,best,pts:thin(S.pts),splits:S.splits,laps:S.laps,mlaps:S.mlaps,gpsStats,hr:hrv.length?{avg:Math.round(hrv.reduce((a,b)=>a+b)/hrv.length),max:Math.max(...hrv)}:null};
- runs.push(r);store.set('pista.runs',runs);clearActiveSession();reset();photoCard(r,true)}
+ runs.push(r);store.set('pista.runs',runs);clearActiveSession();reset();saveScreen(r)}
 $('#bmain').onclick=toggle;$('#bend').onclick=finish;
 
 /* Telas */
@@ -704,7 +772,7 @@ document.querySelectorAll('nav a').forEach(a=>a.onclick=e=>{e.preventDefault();t
 const sorted=()=>[...runs].sort((a,b)=>b.date-a.date);
 function renderList(){['#list','#pfList'].forEach(sel=>{const L=$(sel);if(!L)return;
  if(!runs.length){L.innerHTML='<div class="empty">Nenhuma corrida ainda. Toque em Correr para começar.</div>';return}
- L.innerHTML=sorted().map(r=>`<button class="item" data-id="${r.id}"><span><b class="num">${fK(r.dist)} km</b><small>${fD(r.date)}${r.manual?' · manual':''}</small></span><span class="r"><b class="num">${fT(r.time)}</b><small>${fP(r.time/(r.dist/1000))} /km</small></span></button>`).join('');
+ L.innerHTML=sorted().map(r=>`<button class="item" data-id="${r.id}"><span><b class="num">${fK(r.dist)} km</b><small>${r.title?esc(r.title)+' · ':''}${fD(r.date)}${r.manual?' · manual':''}</small></span><span class="r"><b class="num">${fT(r.time)}</b><small>${fP(r.time/(r.dist/1000))} /km</small></span></button>`).join('');
  L.querySelectorAll('.item').forEach(b=>b.onclick=()=>openRun(+b.dataset.id))})}
 function weekStart(ts,back=0){const d=new Date(ts);d.setHours(0,0,0,0);d.setDate(d.getDate()-((d.getDay()+6)%7)-7*back);return d.getTime()}
 function renderGoals(){
@@ -945,7 +1013,7 @@ function openRun(id){const r=runs.find(x=>x.id==id);if(!r)return;
  const rows=ps.map(p=>p),bp=Math.min(...ps,rt/(rest/1000)||1e9);
  let sp=ps.map((p,i)=>`<div class="sp"><span>${i+1}</span><i style="width:${Math.round(bp/p*100)}%"></i><b>${fP(p)}</b></div>`).join('');
  if(ps.length&&rest>=100)sp+=`<div class="sp"><span>${fK(rest)}</span><i style="width:${Math.round(bp/(rt/(rest/1000))*100)}%;opacity:.5"></i><b>${fP(rt/(rest/1000))}</b></div>`;
- sheet(`<h1 style="margin-bottom:2px">${fK(r.dist)} km</h1><div style="color:var(--mut)">${fD(r.date)}</div>${r.hr?`<div style="color:var(--mut)">♥ ${r.hr.avg} bpm médio${r.hr.max?' · máx '+r.hr.max:''}</div>`:''}
+ sheet(`<h1 style="margin-bottom:2px">${fK(r.dist)} km</h1><div style="color:var(--mut)">${fD(r.date)}</div>${r.title?`<div style="font-weight:700;margin-top:6px">${esc(r.title)}</div>`:''}${r.desc?`<div style="color:var(--mut)">${esc(r.desc)}</div>`:''}${(r.type||r.effort||r.gear)?`<div class="note">${[r.type,r.effort?'Esforço '+r.effort+'/10':'',r.gear].filter(Boolean).map(esc).join(' · ')}</div>`:''}${r.notes?`<div class="note">🔒 ${esc(r.notes)}</div>`:''}${r.hr?`<div style="color:var(--mut)">♥ ${r.hr.avg} bpm médio${r.hr.max?' · máx '+r.hr.max:''}</div>`:''}
  ${r.pts.length?(()=>{const z=r.gpsStats||routeStats(r.pts);return `<div class="note">Subida estimada: ${z.ascent||0} m · Velocidade máxima GPS: ${formatSpeed(z.maxSpeed)}${z.gpsAccuracy?' · Precisão média: ±${Math.round(z.gpsAccuracy)} m':''}</div>`})():''}
  ${r.pts.length?'<div id="dmap"></div>':''}
  <div class="stats"><div><b class="num">${fT(r.time)}</b><span>Tempo</span></div><div><b class="num">${fP(r.time/(r.dist/1000))}</b><span>Ritmo médio /km</span></div><div><b class="num">${r.pts.length?Math.round(r.dist/r.time*3.6*10)/10:'–'}</b><span>km/h</span></div></div>
@@ -953,7 +1021,7 @@ function openRun(id){const r=runs.find(x=>x.id==id);if(!r)return;
  ${r.mlaps&&r.mlaps.length?'<h2>Voltas</h2>'+r.mlaps.map((l,i)=>{const q=r.mlaps[i-1]||[0,0],pd=l[0]-q[0],pt=l[1]-q[1];return `<div class="row" style="padding:5px 0;border-bottom:1px solid var(--line)"><span>Volta ${i+1}</span><span class="num">${fK(pd)} km · ${fT(pt)} · ${fP(pt/(pd/1000))}</span></div>`}).join(''):''}
  ${r.laps&&r.laps.length?'<h2>Treino</h2>'+r.laps.map(l=>`<div class="row" style="padding:5px 0;border-bottom:1px solid var(--line)"><span>${esc(l.n)}</span><span class="num">${fT(l.t)} · ${l.d} m · ${fP(l.t/(l.d/1000))}</span></div>`).join(''):''}
  <button class="main" id="xf" style="width:100%;margin-top:18px">Criar foto com estatísticas</button>
- <div class="btns" style="margin-top:10px">${r.pts.length?'<button class="sec" id="xg">Exportar GPX</button>':''}<button class="sec" id="xh">♥ bpm</button><button class="sec danger" id="xd">Excluir</button><button class="main" id="xc">Fechar</button></div>`);
+ <div class="btns" style="margin-top:10px">${r.pts.length?'<button class="sec" id="xg">Exportar GPX</button>':''}<button class="sec" id="xh">♥ bpm</button><button class="sec danger" id="xd">Excluir</button></div><div class="shfoot"><button class="main" id="xc">Fechar</button></div>`);
  if(r.pts.length)showRoute($('#dmap'),r.pts,false);
  $('#xc').onclick=close;$('#xf').onclick=()=>photoCard(r);$('#xh').onclick=()=>{const v=parseInt(prompt('Batimentos médios (bpm):',r.hr?r.hr.avg:''));if(v>0){r.hr={...(r.hr||{}),avg:v};store.set('pista.runs',runs);close();openRun(id)}};$('#xd').onclick=()=>{if(confirm('Excluir esta corrida?')){runs=runs.filter(x=>x.id!=id);store.set('pista.runs',runs);close();renderList();renderGoals()}};
  if($('#xg'))$('#xg').onclick=()=>gpx(r)}
@@ -978,6 +1046,8 @@ let ip=null;addEventListener('beforeinstallprompt',e=>{e.preventDefault();ip=e;$
 $('#binst').onclick=async()=>{if(!ip)return;ip.prompt();await ip.userChoice;ip=null;$('#binst').hidden=true};
 addEventListener('appinstalled',()=>{$('#binst').hidden=true});
 const sp=$('#splash');let seen=false;try{seen=sessionStorage.getItem('pista.sp')}catch(e){}
+try{const lo=Number(localStorage.getItem('pista.lastOpen')||0);if(Date.now()-lo<6*3600*1000||store.get('pista.activeSession',null))seen=true}catch(e){}
+const stamp=()=>{try{localStorage.setItem('pista.lastOpen',String(Date.now()))}catch(e){}};stamp();addEventListener('pagehide',stamp);
 let spT=0;function endSplash(){clearTimeout(spT);sp.classList.add('off');setTimeout(()=>sp.remove(),500)}
 if(seen)sp.remove();else{try{sessionStorage.setItem('pista.sp','1')}catch(e){}
  /* Vídeo de abertura opcional: se existir intro.mp4 ao lado do index.html ele toca (com som no app Android; mudo no navegador); senão fica só a imagem. Toque na tela para pular. */
@@ -1012,7 +1082,7 @@ let curTab=0;
 const SVG_I=(x,w=28)=>`<svg viewBox="0 0 24 24" width="${w}" height="${w}" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${x}</svg>`;
 const I_PAUSE=SVG_I('<rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor"/><rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor"/>'),I_PLAY=SVG_I('<path d="M8 5v14l11-7z" fill="currentColor"/>'),I_LOOP=SVG_I('<path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v5h-5"/>'),I_FLAG=SVG_I('<path d="M6 21V4M6 5h11l-2 4 2 4H6"/>');
 function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),2600)}
-function syncRec(){const show=S.st!=='idle'&&curTab===0;$('#rec').hidden=!show;document.body.classList.toggle('rec',show);
+function syncRec(){const show=S.st!=='idle'&&curTab===0;if(!show){const bg=$('#rBig');if(bg){bg.hidden=true;$('#rec').classList.remove('big')}}$('#rec').hidden=!show;document.body.classList.toggle('rec',show);
  const a=document.querySelector('nav a[data-t="0"]>span');if(a)a.textContent=S.st==='idle'?'Correr':'Gravando';
  if(S.st==='running'){$('#rMain').innerHTML=I_PAUSE+'Pausar';$('#rSec').innerHTML=I_LOOP+'Volta';$('#rSec').className=''}
  else if(S.st==='paused'){$('#rMain').innerHTML=I_PLAY+'Continuar';$('#rSec').innerHTML=I_FLAG+'Finalizar';$('#rSec').className='fin'}}
@@ -1023,7 +1093,17 @@ function recUI(){
  $('#rHr').textContent=$('#hr').hidden?'—':$('#hr').textContent.replace('♥ ','');
  $('#rTitle').textContent=S.sg.length&&plan?plan.nome:'Corrida';
  const sg=$('#seg');$('#rSeg').hidden=sg.hidden;$('#rSeg').innerHTML=sg.innerHTML;
- showRoute($('#recMap'),S.pts,S.st==='running')}
+ showRoute($('#recMap'),S.pts,S.st==='running');bigUI()}
+function bigUI(){const B=$('#rBig');if(!B||B.hidden)return;
+ $('#bTm').textContent=fT(el());$('#bAp').textContent=fP(S.dist>=50?el()/(S.dist/1000):NaN);$('#bDist').textContent=fK(S.dist);$('#bCp').textContent=fP(curPace());
+ const sp=S.splits||[],ps=sp.map((t,i)=>t-(sp[i-1]||0)),rest=S.dist-ps.length*1000,rt=el()-(sp[ps.length-1]||0),cur=rest>=20?rt/(rest/1000):NaN;
+ const slots=ps.slice(-2).map(p=>({p}));slots.push({p:cur,part:Math.max(0,Math.min(1,rest/1000))});
+ const vs=slots.map(x=>x.p).filter(v=>isFinite(v)&&v>0),bp=vs.length?Math.min(...vs):1;
+ let h=slots.map(x=>{const ok=isFinite(x.p)&&x.p>0,ht=ok?Math.round(34+22*Math.min(1,bp/x.p)):14;return `<div class="bs"><em>${ok?fP(x.p):''}</em><i class="${ok?'on':''}" style="height:${ht}px"></i>${x.part!=null?`<u style="width:${Math.round(x.part*100)}%"></u>`:''}</div>`}).join('');
+ for(let i=slots.length;i<3;i++)h+='<div class="bs"><em></em><i style="height:14px"></i></div>';
+ $('#bSp').innerHTML=h;
+ const parts=[];if(!$('#hr').hidden)parts.push($('#hr').textContent);if(S.mlaps.length)parts.push(S.mlaps.length+(S.mlaps.length>1?' voltas':' volta'));$('#bX').textContent=parts.join(' · ');
+ const sg=$('#seg');$('#bSeg').hidden=sg.hidden;$('#bSeg').innerHTML=sg.innerHTML}
 function lap(){const e=el(),d=S.dist,q=S.mlaps[S.mlaps.length-1]||[0,0],dd=d-q[0],dt=e-q[1];S.mlaps.push([+d.toFixed(1),+e.toFixed(1)]);
  const t=`Volta ${S.mlaps.length}: ${fK(dd)} km · ${fP(dd>=20?dt/(dd/1000):NaN)} /km`;toast(t);say('Volta '+S.mlaps.length);recUI()}
 
@@ -1034,7 +1114,7 @@ $('#recLayers').onclick=()=>{$('#recPop').hidden=!$('#recPop').hidden};
 $('#popPoi').onchange=e=>{const m=gm();if(m){m.pois=e.target.checked;glApply(m)}};
 $('#popB3d').onchange=e=>{const m=gm();if(m){m.b3d=e.target.checked;glApply(m);if(m.b3d&&m.map.getPitch()<10)m.map.easeTo({pitch:60,duration:500})}}}
 $('#rMain').onclick=toggle;$('#rSec').onclick=()=>{S.st==='running'?lap():finish()};
-$('#recBack').onclick=()=>tab(1);$('#rExp').onclick=()=>$('#recCard').classList.toggle('open');
+$('#recBack').onclick=()=>tab(1);$('#rExp').onclick=()=>{$('#rBig').hidden=false;$('#rec').classList.add('big');bigUI()};$('#rBigX').onclick=()=>{$('#rBig').hidden=true;$('#rec').classList.remove('big')};
 $('#recCenter').onclick=()=>{const m=MAPS.get($('#recMap')),P=S.pts,l=P[P.length-1];if(!m)return;if(m.gl){m.follow=true;$('#recCenter').classList.remove('off');const ll=glPosLL(m);if(ll)m.map.easeTo({center:ll,zoom:Math.max(m.map.getZoom(),17),duration:500});return}m.follow=true;$('#recCenter').classList.remove('off');if(l)m.map.setView([l[0],l[1]],Math.max(m.map.getZoom(),17))};
 
 /* Questionário inicial: define nível, objetivo, dias, meta semanal e cuidados de saúde */

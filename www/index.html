@@ -142,6 +142,10 @@ nav a.on .navav{outline:2px solid var(--acc);outline-offset:1px}
 .wkstats{display:flex;flex-wrap:wrap;gap:14px 28px;margin:8px 0 16px}.wkstats small{display:block;color:var(--mut);font-size:14px}
 .wkstats b{font:700 28px/1.1 'Barlow Condensed','Arial Narrow',sans-serif}
 .wk div{font-size:9px}
+.wk{width:100%;box-sizing:border-box;gap:3px;overflow:hidden}
+.wk div{flex:1 1 0;min-width:0}
+.wk span{display:block;max-width:100%;white-space:nowrap;letter-spacing:-.3px;line-height:1.2;min-height:11px;text-align:center}
+.pc-ov{margin-top:8px}
 /* Treinador: identidade própria (azul-marinho e turquesa), só nesta tela */
 #s5 .co-hero{background:repeating-linear-gradient(115deg,rgba(25,211,197,.09) 0 2px,transparent 2px 28px),linear-gradient(140deg,#06182E 0%,#0B3A6B 62%,#0E7C86 130%);color:#fff;border-radius:22px;padding:18px 18px 16px;margin-bottom:12px;box-shadow:0 12px 30px rgba(6,24,46,.28)}
 #s5 .co-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
@@ -538,7 +542,47 @@ async function bgMap(r){
  const res=await Promise.all(jobs);if(res.filter(t=>t.im).length<res.length*.6)return null;
  g.filter='grayscale(.65) brightness(1.06)';res.forEach(t=>{if(t.im)g.drawImage(t.im,(t.x-cx)*ts+SW/2,(t.y-cy)*ts+oy,ts,ts)});g.filter='none';
  drawTrack(g,P,q=>(mx(q[1])*n-cx)*ts+SW/2,q=>(my(q[0])*n-cy)*ts+oy,12);return c}
-function cardCompose(r,bg,title,mode,lg){
+function drawRouteOv(g,P,bx,by,bw,bh){
+ if(!P||P.length<2)return;
+ const la=P.map(q=>q[0]),lo=P.map(q=>q[1]),a0=Math.min(...la),a1=Math.max(...la),o0=Math.min(...lo),o1=Math.max(...lo),k=Math.cos((a0+a1)/2*Math.PI/180),sx=Math.max((o1-o0)*k,2e-5),sy=Math.max(a1-a0,2e-5),sc=Math.min(bw/sx,bh/sy),ox=bx+(bw-sx*sc)/2,oy=by+(bh-sy*sc)/2,X=q=>ox+(q[1]-o0)*k*sc,Y=q=>oy+(a1-q[0])*sc;
+ g.save();g.shadowColor='rgba(0,0,0,.45)';g.shadowBlur=8;g.lineCap=g.lineJoin='round';
+ [['rgba(255,255,255,.95)',16],['#FF5A1F',9]].forEach(([c,w])=>{g.strokeStyle=c;g.lineWidth=w;g.beginPath();P.forEach((q,i)=>i?g.lineTo(X(q),Y(q)):g.moveTo(X(q),Y(q)));g.stroke()});
+ g.shadowBlur=0;[[P[0],'#0C8A4B'],[P[P.length-1],'#10222E']].forEach(([q,c])=>{g.fillStyle=c;g.strokeStyle='#fff';g.lineWidth=5;g.beginPath();g.arc(X(q),Y(q),11,0,7);g.stroke();g.fill()});
+ g.restore()}
+function identTL(g,r,x,y){
+ const F="Barlow,system-ui,sans-serif",dt=new Date(r.date).toLocaleDateString('pt-BR',{day:'numeric',month:'long',year:'numeric'}),nm=(profile.name||'').trim();
+ g.save();g.textAlign='left';g.fillStyle='#fff';g.shadowColor='rgba(0,0,0,.6)';g.shadowBlur=12;
+ g.font=`500 42px ${F}`;g.fillText(dt,x,y);
+ if(nm){let fs=54;g.font=`700 ${fs}px ${F}`;while(g.measureText(nm).width>620&&fs>30){fs-=2;g.font=`700 ${fs}px ${F}`}g.fillText(nm,x,y+62)}
+ g.restore()}
+function cardStyled(r,bg,title,mode,lg,ov,est,idt){
+ const c=$('#pc'),g=c.getContext('2d'),F="Barlow,system-ui,sans-serif",FC="'Barlow Condensed','Arial Narrow',sans-serif";c.width=SW;c.height=SH;g.drawImage(bg,0,0);
+ let el=0;try{el=Math.round((r.gpsStats||routeStats(r.pts)).ascent||0)}catch(e){}
+ const pace=fP(r.time/(r.dist/1000))+' /km',dt=new Date(r.date).toLocaleDateString('pt-BR',{day:'numeric',month:'long',year:'numeric'});
+ g.shadowColor='rgba(0,0,0,.55)';g.shadowBlur=12;g.fillStyle='#fff';
+ if(est==='pista'){
+  const sh=g.createLinearGradient(0,SH*.45,0,SH);sh.addColorStop(0,'rgba(0,0,0,0)');sh.addColorStop(1,'rgba(0,0,0,.78)');g.fillStyle=sh;g.fillRect(0,SH*.45,SW,SH*.55);
+  const sh2=g.createLinearGradient(0,0,0,420);sh2.addColorStop(0,'rgba(0,0,0,.5)');sh2.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=sh2;g.fillRect(0,0,SW,420);
+  g.fillStyle='#fff';g.textAlign='left';
+  if(lg){g.shadowBlur=0;const h=110,w=lg.width/lg.height*h;g.drawImage(lg,70,70,w,h);g.shadowBlur=12}
+  if(idt)identTL(g,r,75,250);let fs=idt?40:48;g.font=`600 ${fs}px ${F}`;while(g.measureText(title).width>520&&fs>26){fs-=2;g.font=`600 ${fs}px ${F}`}g.fillStyle='#fff';g.globalAlpha=idt?.85:1;g.fillText(title,75,idt&&(profile.name||'').trim()?378:idt?318:310);g.globalAlpha=1;
+  g.font=`700 300px ${FC}`;const km=fK(r.dist);g.fillText(km,70,1560);const kw=g.measureText(km).width;g.font=`600 80px ${F}`;g.fillText('km',90+kw,1560);
+  const it=[[pace.replace(' /km',''),'ritmo /km'],[fDur(r.time),'tempo']];if(r.hr)it.push([r.hr.avg+'','bpm médio']);if(el)it.push([el+' m','elevação']);
+  it.forEach((x,i)=>{const px=75+i*(it.length>3?250:330);g.font=`700 100px ${FC}`;g.fillText(x[0],px,1715);g.font=`500 38px ${F}`;g.globalAlpha=.9;g.fillText(x[1],px,1775);g.globalAlpha=1});
+  if(ov&&mode==='photo')drawRouteOv(g,r.pts,SW-75-440,120,440,520);
+ }else{
+  const sh=g.createLinearGradient(SW*.35,0,SW,0);sh.addColorStop(0,'rgba(0,0,0,0)');sh.addColorStop(1,'rgba(0,0,0,.55)');g.fillStyle=sh;g.fillRect(SW*.35,0,SW*.65,SH);
+  g.fillStyle='#fff';g.textAlign='center';const cx=SW*.74;
+  if(lg){g.shadowBlur=0;const h=100,w=lg.width/lg.height*h;g.drawImage(lg,cx-w/2,430,w,h);g.shadowBlur=12}
+  const it=[['Distância',fK(r.dist)+' km'],['Ritmo',pace],['Tempo',fDur(r.time)]];if(el)it.push(['Elevação',el+' m']);if(r.hr)it.push(['FC méd',r.hr.avg+' bpm']);
+  it.forEach((x,i)=>{const y=640+i*165;g.font=`500 38px ${F}`;g.globalAlpha=.92;g.fillText(x[0],cx,y);g.globalAlpha=1;g.font=`700 76px ${FC}`;g.fillText(x[1],cx,y+78)});
+  if(ov&&mode==='photo')drawRouteOv(g,r.pts,SW-640,560,560,700);
+  g.textAlign='center';g.font=`700 70px ${F}`;g.lineJoin='round';g.lineWidth=10;g.strokeStyle='rgba(0,0,0,.85)';g.shadowBlur=0;g.strokeText(title,SW/2,1780);g.fillText(title,SW/2,1780);
+  if(idt)identTL(g,r,75,150);
+ }
+ if(mode==='map'){g.shadowBlur=0;g.textAlign='left';g.font=`500 24px ${F}`;g.globalAlpha=.8;g.fillStyle='#fff';g.fillText('© OpenStreetMap',75,1880);g.globalAlpha=1}}
+function cardCompose(r,bg,title,mode,lg,ov,est,idt){
+ if(est==='pista'||est==='strava')return cardStyled(r,bg,title,mode,lg,ov,est,idt);
  const c=$('#pc'),g=c.getContext('2d'),F="Barlow,system-ui,sans-serif";c.width=SW;c.height=SH;g.drawImage(bg,0,0);
  const sh=g.createLinearGradient(0,SH*.6,0,SH);sh.addColorStop(0,'rgba(0,0,0,0)');sh.addColorStop(1,'rgba(0,0,0,.74)');g.fillStyle=sh;g.fillRect(0,SH*.6,SW,SH*.4);
  g.textAlign='left';g.fillStyle='#fff';g.shadowColor='rgba(0,0,0,.4)';g.shadowBlur=10;
@@ -546,21 +590,26 @@ function cardCompose(r,bg,title,mode,lg){
  if(lg){g.shadowBlur=0;const h=92,w=lg.width/lg.height*h;g.drawImage(lg,SW-70-w,1712-h+14,w,h);g.shadowBlur=10}
  const it=[['Distância',fK(r.dist)+' km'],['Ritmo',fP(r.time/(r.dist/1000))+' /km'],['Tempo',fDur(r.time)]];if(r.hr)it.push(['Batimentos',r.hr.avg+' bpm']);
  const cw=(SW-150)/it.length;it.forEach((x,i)=>{const px=75+i*(it.length===3?325:cw);g.font=`500 32px ${F}`;g.globalAlpha=.9;g.fillText(x[0],px,1790);g.globalAlpha=1;g.font=`600 ${it.length===3?66:54}px ${F}`;g.fillText(x[1],px,1862)});
- if(mode==='map'){g.shadowBlur=0;g.font=`500 24px ${F}`;g.globalAlpha=.8;g.fillText('© OpenStreetMap',75,1648);g.globalAlpha=1}}
+ if(mode==='map'){g.shadowBlur=0;g.font=`500 24px ${F}`;g.globalAlpha=.8;g.fillText('© OpenStreetMap',75,1648);g.globalAlpha=1}
+ if(ov&&mode==='photo')drawRouteOv(g,r.pts,SW-75-440,120,440,520);
+ if(idt){const t=g.createLinearGradient(0,0,0,360);t.addColorStop(0,'rgba(0,0,0,.5)');t.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=t;g.fillRect(0,0,SW,360);identTL(g,r,75,150)}}
 function photoCard(r,fromFinish){
- let mode=r.pts.length>1?'map':'brand',img=null,title=r.title||autoTitle(r.date);const cache={};
+ let mode=r.pts.length>1?'map':'brand',img=null,ov=true,idt=true,est='classic',title=r.title||autoTitle(r.date);const cache={};
  sheet(`<h1>Compartilhar corrida</h1>
  <label for="pcT" style="margin-top:0">Título</label><input type="text" id="pcT" maxlength="40" value="${esc(title)}">
- <div class="ob-chips" id="pcM" style="margin-top:12px">${r.pts.length>1?'<button class="ob-chip" data-m="map">Mapa do trajeto</button>':''}<button class="ob-chip" data-m="brand">Fundo Pista</button></div>
+ <div class="ob-chips" id="pcM" style="margin-top:12px">${r.pts.length>1?'<button class="ob-chip" data-m="map">Mapa do trajeto</button>':''}<button class="ob-chip" data-m="brand">Fundo Pista</button>${r.pts.length>1?'<button class="ob-chip" id="pcOv">Trajeto sobre a foto</button>':''}</div>
+ <div class="ob-chips" id="pcE" style="margin-top:8px"><button class="ob-chip" data-e="classic">Clássico</button><button class="ob-chip" data-e="pista">Pista</button><button class="ob-chip" data-e="strava">Lateral</button><button class="ob-chip" id="pcId">Nome e data</button></div>
  <div class="btns"><label class="lb">Tirar foto<input type="file" accept="image/*" capture="environment" id="f1" hidden></label><label class="lb">Galeria<input type="file" accept="image/*" id="f2" hidden></label></div>
  <canvas id="pc" style="display:block;max-height:56vh;max-width:100%;width:auto;margin:12px auto 0;border-radius:14px"></canvas>
  <div class="btns" id="fb" style="margin-top:12px"><button class="sec" id="fs">Compartilhar</button><button class="main" id="fd">Salvar na galeria</button></div>
  <button class="link" id="fx" style="width:100%;text-align:center">${fromFinish?'Concluir':'Voltar'}</button>`);
  const bgOf=async()=>{if(!cache[mode])cache[mode]=mode==='photo'?bgPhoto(img):mode==='map'?((await bgMap(r))||bgBrand(r)):bgBrand(r);return cache[mode]};
- let tk=0;const draw=async()=>{const my=++tk;document.querySelectorAll('#pcM .ob-chip').forEach(b=>b.classList.toggle('on',b.dataset.m===mode));$('#pc').style.opacity=.35;
+ let tk=0;const draw=async()=>{const my=++tk;document.querySelectorAll('#pcM .ob-chip[data-m]').forEach(b=>b.classList.toggle('on',b.dataset.m===mode));document.querySelectorAll('#pcE .ob-chip[data-e]').forEach(b=>b.classList.toggle('on',b.dataset.e===est));$('#pcId').classList.toggle('on',idt);{const o=$('#pcOv');if(o){o.classList.toggle('on',ov);o.style.opacity=mode==='photo'?1:.45}}$('#pc').style.opacity=.35;
   try{await Promise.all([document.fonts.load('600 40px Barlow'),document.fonts.load('500 32px Barlow')])}catch(e){}
-  const [bg,lg]=await Promise.all([bgOf(),getLogo()]);if(my!==tk)return;cardCompose(r,bg,title,mode,lg);$('#pc').style.opacity=1};
- document.querySelectorAll('#pcM .ob-chip').forEach(b=>b.onclick=()=>{mode=b.dataset.m;draw()});
+  const [bg,lg]=await Promise.all([bgOf(),getLogo()]);if(my!==tk)return;cardCompose(r,bg,title,mode,lg,ov,est,idt);$('#pc').style.opacity=1};
+ document.querySelectorAll('#pcM .ob-chip[data-m]').forEach(b=>b.onclick=()=>{mode=b.dataset.m;draw()});
+ {const o=$('#pcOv');if(o)o.onclick=()=>{ov=!ov;draw()}}
+ document.querySelectorAll('#pcE .ob-chip[data-e]').forEach(b=>b.onclick=()=>{est=b.dataset.e;draw()});$('#pcId').onclick=()=>{idt=!idt;draw()};
  $('#pcT').oninput=e=>{title=e.target.value;draw()};
  const load=e=>{const f=e.target.files[0];if(!f)return;const im=new Image();im.onload=()=>{img=im;delete cache.photo;mode='photo';draw()};im.src=URL.createObjectURL(f)};
  $('#f1').onchange=$('#f2').onchange=load;
